@@ -11,12 +11,13 @@ import android.content.SharedPreferences
 class SharedManager {
     private var mSharedPref: SharedPreferences? = null
     val AUTO_LOGIN = "AUTO_LOGIN"                           // 자동 로그인 여부
+    val USER_NAME  = "USER_NAME"                            // 닉네임
 
     private fun SharedManager() {}
 
     fun init(context: Context) {
-        if (mSharedPref == null) mSharedPref =
-            context.getSharedPreferences(context.packageName, Activity.MODE_PRIVATE)
+        if (mSharedPref == null)
+            mSharedPref = context.getSharedPreferences(context.packageName, Activity.MODE_PRIVATE)
     }
 
     fun read(key: String?, defValue: String?): String? {

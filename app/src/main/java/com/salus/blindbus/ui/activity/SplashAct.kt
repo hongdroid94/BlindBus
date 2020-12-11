@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.salus.blindbus.databinding.ActivitySplashBinding
+import com.salus.blindbus.util.SharedManager
 import java.util.*
 
 /**
@@ -16,14 +17,34 @@ class SplashAct : AppCompatActivity() {
         // 뷰 바인딩 (View Binding)
         val binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setInitialize(binding)
+    }
+
+    private fun setInitialize(binding: ActivitySplashBinding) {
+//        SharedManager().init(applicationContext)
+
+        // check enabled auto login
+//        if (SharedManager().read(SharedManager().AUTO_LOGIN, false) == true) {
+//            val mainIntent = Intent(this@SplashAct, MainAct::class.java)
+//            startActivity(mainIntent)
+//            finish()
+//        } else {
+//            Timer().schedule(object : TimerTask() {
+//                override fun run() {
+//                    val mainIntent = Intent(this@SplashAct, LoginAct::class.java)
+//                    startActivity(mainIntent)
+//                    finish()
+//                }
+//            }, 1500)
+//        }
 
         Timer().schedule(object : TimerTask() {
-            override fun run() {
-                // TODO: 추후 자동로그인 구현 시 분기를 줘서 Login 으로 갈지 Main 으로 바로 갈지 처리필요
-                val mainIntent = Intent(this@SplashAct, LoginAct::class.java)
-                startActivity(mainIntent)
-                finish()
-            }
-        }, 1500)
+                override fun run() {
+                    val mainIntent = Intent(this@SplashAct, LoginAct::class.java)
+                    startActivity(mainIntent)
+                    finish()
+                }
+            }, 1500)
+
     }
 }

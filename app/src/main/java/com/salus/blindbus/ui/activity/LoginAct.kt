@@ -4,10 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import com.salus.blindbus.api.MainApi
 import com.salus.blindbus.databinding.ActivityLoginBinding
 import com.salus.blindbus.model.ResponseModel
+import com.salus.blindbus.util.SharedManager
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -26,6 +28,12 @@ class LoginAct : AppCompatActivity() {
         // 뷰 바인딩 (View Binding)
         val binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setInitialize(binding)
+    }
+
+    private fun setInitialize(binding: ActivityLoginBinding) {
+//        SharedManager().init(applicationContext)
+
         binding.apply {
             // 회원가입
             tvRegister.setOnClickListener {
@@ -37,16 +45,15 @@ class LoginAct : AppCompatActivity() {
                 val strId : String = etId.text.toString()
                 val strPw : String = etPwd.text.toString()
                 // check empty input field
-                if (strPw.isEmpty() || strPw.isEmpty()) {
+                if (strId.isEmpty() || strPw.isEmpty()) {
                     Toast.makeText(this@LoginAct, "입력되지 않는 필드가 존재합니다.", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
                 // check email type pattern
-//                if(!isCheckEmail(strPw)) {
-//                    Toast.makeText(this@LoginAct, "이메일 형식에 맞지 않습니다.", Toast.LENGTH_SHORT).show()
-//                    return@setOnClickListener
-//                }
-
+                if(!isCheckEmail(strId)) {
+                    Toast.makeText(this@LoginAct, "이메일 형식에 맞지 않습니다.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
 
                 val loginMap : HashMap<String, String> = HashMap()
                 loginMap["userID"] = etId.text.toString()
@@ -59,32 +66,23 @@ class LoginAct : AppCompatActivity() {
                         .subscribe({ response: ResponseModel ->
 
                             if (response.success) {
-                                Toast.makeText(
-                                    this@LoginAct,
-                                    "환영합니다 ${response.userName} 님 !",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                // save local DB for user account info
+//                                SharedManager().write(SharedManager().AUTO_LOGIN, true)
+//                                SharedManager().write(SharedManager().USER_NAME, response.userName)
+                                Toast.makeText(this@LoginAct, "환영합니다 ${response.userName} 님 !", Toast.LENGTH_SHORT).show()
                                 val loginIntent = Intent(this@LoginAct, MainAct::class.java)
                                 startActivity(loginIntent)
                                 finish()
                             } else {
-                                Toast.makeText(
-                                    this@LoginAct,
-                                    "로그인 과정에서 문제가 발생되었습니다\n잠시 후 다시 시도해주세요",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                Toast.makeText(this@LoginAct, "아이디나 비밀번호가 올바르지 않습니다\n잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
                             }
 //                        Toast.makeText(this@RegisterAct, "Response ${response.success} ${response.userID} ${response.userPassword}", Toast.LENGTH_SHORT).show()
                         }, { error: Throwable ->
                             Log.d("RegisterAct", error.localizedMessage)
-                            Toast.makeText(
-                                this@LoginAct,
-                                "Error ${error.localizedMessage}",
-                                Toast.LENGTH_SHORT
+                            Toast.makeText(this@LoginAct, "Error ${error.localizedMessage}", Toast.LENGTH_SHORT
                             ).show()
                         })
                 )
-
             }
         }
 

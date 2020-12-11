@@ -24,7 +24,10 @@ class RegisterAct : AppCompatActivity() {
         // 뷰 바인딩 (View Binding)
         val binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setInitialize(binding)
+    }
 
+    private fun setInitialize(binding: ActivityRegisterBinding) {
         // 회원가입 버튼
         binding.apply {
             ivRegister.setOnClickListener {
