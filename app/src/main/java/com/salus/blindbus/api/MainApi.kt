@@ -14,9 +14,6 @@ import retrofit2.http.*
 
 class MainApi {
     interface MainApiImpl {
-        @GET("/search/repositories")
-        fun getRepoList(@Query("q") query: String): Observable<ResponseModel>
-
         @FormUrlEncoded
         @POST("/salus_api/register.php")
         fun postRegister(@FieldMap map: HashMap<String, String>): Observable<ResponseModel>
@@ -27,10 +24,6 @@ class MainApi {
     }
 
     companion object {
-        fun getRepoList(query: String): Observable<ResponseModel> {
-            return RetrofitCreator.create(MainApiImpl::class.java).getRepoList(query)
-        }
-
         fun postRegister(map: HashMap<String, String>): Observable<ResponseModel> {
             return RetrofitCreator.create(MainApiImpl::class.java).postRegister(map)
         }

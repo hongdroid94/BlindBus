@@ -7,14 +7,6 @@ import com.google.gson.annotations.SerializedName
  * 수신받는 데이터 중 사용하려고 하는 필드들만 구현해도 상관 없다.
  */
 class RepoModel {
-//    @SerializedName("id")
-//    val id: Long = 0
-//
-//    @SerializedName("name")
-//    val name: String = ""
-//
-//    @SerializedName("full_name")
-//    val fullName: String = ""
     @SerializedName("userID")
     val userID : String = ""
 

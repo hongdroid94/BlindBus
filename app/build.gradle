@@ -52,17 +52,17 @@ dependencies {
     // okhttp
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
-
     // glide 추가
     def glide_version = '4.11.0'
     implementation "com.github.bumptech.glide:glide:$glide_version"
     kapt "com.github.bumptech.glide:compiler:$glide_version"
-
     // ted 퍼미션
     implementation 'gun0912.ted:tedpermission:2.2.3'
-
     // wave view
     implementation 'com.scwang.wave:MultiWaveHeader:1.0.0-alpha-1'
+    // lottie animtaion
+    def lottieVersion = '3.4.0'
+    implementation "com.airbnb.android:lottie:$lottieVersion"
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

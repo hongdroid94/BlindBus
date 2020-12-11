@@ -41,11 +41,6 @@ import com.google.gson.annotations.SerializedName
  */
 
 class ResponseModel {
-//    @SerializedName("total_count")
-//    val totalCount: Int = 0
-//
-//    @SerializedName("items")
-//    val items:List<RepoModel> = listOf()
 
     @SerializedName("success")
     val success : Boolean = false

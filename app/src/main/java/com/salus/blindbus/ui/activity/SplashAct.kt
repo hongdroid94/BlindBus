@@ -21,30 +21,22 @@ class SplashAct : AppCompatActivity() {
     }
 
     private fun setInitialize(binding: ActivitySplashBinding) {
-//        SharedManager().init(applicationContext)
+        SharedManager.init(applicationContext)
 
         // check enabled auto login
-//        if (SharedManager().read(SharedManager().AUTO_LOGIN, false) == true) {
-//            val mainIntent = Intent(this@SplashAct, MainAct::class.java)
-//            startActivity(mainIntent)
-//            finish()
-//        } else {
-//            Timer().schedule(object : TimerTask() {
-//                override fun run() {
-//                    val mainIntent = Intent(this@SplashAct, LoginAct::class.java)
-//                    startActivity(mainIntent)
-//                    finish()
-//                }
-//            }, 1500)
-//        }
-
-        Timer().schedule(object : TimerTask() {
+        if (SharedManager.read(SharedManager.AUTO_LOGIN, false)) {
+            val mainIntent = Intent(this@SplashAct, MainAct::class.java)
+            startActivity(mainIntent)
+            finish()
+        } else {
+            Timer().schedule(object : TimerTask() {
                 override fun run() {
                     val mainIntent = Intent(this@SplashAct, LoginAct::class.java)
                     startActivity(mainIntent)
                     finish()
                 }
             }, 1500)
+        }
 
     }
 }
