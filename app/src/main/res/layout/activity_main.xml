@@ -79,6 +79,7 @@
         android:textColor="#fff"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:foreground="?attr/selectableItemBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btn_no" />
@@ -92,6 +93,7 @@
         android:textColor="#fff"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:foreground="?attr/selectableItemBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_yes"
         app:layout_constraintStart_toStartOf="parent" />
@@ -106,5 +108,15 @@
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/radar" />
+
+    <ImageView
+        android:id="@+id/iv_setting"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/img_settings" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

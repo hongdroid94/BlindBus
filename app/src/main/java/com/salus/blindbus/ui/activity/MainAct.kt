@@ -24,7 +24,7 @@ class MainAct : AppCompatActivity() {
         SharedManager.init(applicationContext)
         val strName = SharedManager.read(SharedManager.USER_NAME, "")
         binding.apply {
-            if(!strName.equals(""))
+            if(strName.equals(""))
                 tvWelcome.text = "환영합니다 ${strName} 님 !"
         }
     }
