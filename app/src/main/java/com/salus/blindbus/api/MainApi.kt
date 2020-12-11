@@ -16,12 +16,14 @@ class MainApi {
     interface MainApiImpl {
         @GET("/search/repositories")
         fun getRepoList(@Query("q") query: String): Observable<ResponseModel>
-    }
 
-    interface TestApiImpl {
         @FormUrlEncoded
         @POST("/salus_api/register.php")
         fun postRegister(@FieldMap map: HashMap<String, String>): Observable<ResponseModel>
+
+        @FormUrlEncoded
+        @POST("/salus_api/login.php")
+        fun postLogin(@FieldMap map: HashMap<String, String>): Observable<ResponseModel>
     }
 
     companion object {
@@ -30,7 +32,11 @@ class MainApi {
         }
 
         fun postRegister(map: HashMap<String, String>): Observable<ResponseModel> {
-            return RetrofitCreator.create(TestApiImpl::class.java).postRegister(map)
+            return RetrofitCreator.create(MainApiImpl::class.java).postRegister(map)
+        }
+
+        fun postLogin(map: HashMap<String, String>): Observable<ResponseModel> {
+            return RetrofitCreator.create(MainApiImpl::class.java).postLogin(map)
         }
     }
 }

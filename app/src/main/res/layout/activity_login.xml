@@ -23,7 +23,7 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SAFE CHILDREN"
+            android:text="BLIND BUS"
             android:textColor="#fff"
             android:textSize="20sp"
             android:textStyle="bold"

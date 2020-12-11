@@ -22,6 +22,7 @@ class SplashAct : AppCompatActivity() {
                 // TODO: 추후 자동로그인 구현 시 분기를 줘서 Login 으로 갈지 Main 으로 바로 갈지 처리필요
                 val mainIntent = Intent(this@SplashAct, LoginAct::class.java)
                 startActivity(mainIntent)
+                finish()
             }
         }, 1500)
     }
