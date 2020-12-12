@@ -1,6 +1,7 @@
 package com.salus.blindbus.ui.activity
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.salus.blindbus.databinding.ActivityMainBinding
 import com.salus.blindbus.util.SharedManager
@@ -21,11 +22,10 @@ class MainAct : AppCompatActivity() {
     }
 
     private fun setInitialize(binding: ActivityMainBinding) {
-        SharedManager.init(applicationContext)
-        val strName = SharedManager.read(SharedManager.USER_NAME, "")
+        //TODO : 비콘이 스캐닝 콜백이 완성 되었을 때 Visible 처리 필요
         binding.apply {
-            if(strName.equals(""))
-                tvWelcome.text = "환영합니다 ${strName} 님 !"
+            frameCompleteScan.visibility = View.INVISIBLE
+            tvGuideMsg.visibility = View.VISIBLE
         }
     }
 }
