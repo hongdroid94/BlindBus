@@ -201,7 +201,7 @@ class MainAct : AppCompatActivity() , View.OnTouchListener {
                 myCurrentBusList.sortBy { it.getBeaconRSSI() }
 
                 setEnabledRootTouch(true)
-                tvTtsMsg.text = resources.getString(R.string.busNumber).format(
+                tvTtsMsg.text = resources.getString(R.string.BUS_NUMBER).format(
                     myCurrentBusList.last().getBusStopName()
                 )
             }
@@ -393,7 +393,7 @@ class MainAct : AppCompatActivity() , View.OnTouchListener {
                         root.getChildAt(i).visibility = View.GONE
                     }
                 } else {
-                    tvTtsMsg.text = resources.getString(R.string.busNumber).format(
+                    tvTtsMsg.text = resources.getString(R.string.BUS_NUMBER).format(
                         myCurrentBusList.last().getBusStopName()
                     )
                 }
