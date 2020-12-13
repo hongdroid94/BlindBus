@@ -3,9 +3,14 @@ package com.salus.blindbus.ui.activity
 import android.bluetooth.BluetoothAdapter
 import android.content.*
 import android.os.*
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
@@ -22,20 +27,17 @@ import com.salus.blindbus.util.toastLongShow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 /**
  * 메인 화면
  */
 
-class MainAct : AppCompatActivity() , View.OnTouchListener {
+class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitListener {
 
-    companion object {
-        const val FIRST_BUS_PROXIMITY_AREA = -470
-        const val REQUEST_ENABLE_BT = 1231
-    }
 
     // about binding object
-    private lateinit var binding : ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
 
     // about beacon service
     private var beaconService: BeaconService? = null
@@ -47,12 +49,73 @@ class MainAct : AppCompatActivity() , View.OnTouchListener {
     private var iTouchDownX = 0f
     private var iTouchDownY = 0f
 
+
+    //TTS
+    private var tts: TextToSpeech? = null
+
+    //STT
+    private lateinit var recognizer: SpeechRecognizer
+    private val recognitionListener = object : RecognitionListener {
+        override fun onReadyForSpeech(params: Bundle?) {}
+        override fun onBeginningOfSpeech() {}
+        override fun onRmsChanged(rmsdB: Float) {}
+        override fun onBufferReceived(buffer: ByteArray?) {}
+        override fun onEndOfSpeech() {}
+        override fun onPartialResults(partialResults: Bundle?) {}
+        override fun onEvent(eventType: Int, params: Bundle?) {}
+
+        override fun onError(error: Int) {
+            val message: String = when (error) {
+                SpeechRecognizer.ERROR_AUDIO -> "오디오 에러"
+                SpeechRecognizer.ERROR_CLIENT -> "클라이언트 에러"
+                SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "퍼미션 없음"
+                SpeechRecognizer.ERROR_NETWORK -> "네트워크 에러"
+                SpeechRecognizer.ERROR_NETWORK_TIMEOUT -> "네트워크 타임아웃"
+                SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "RECOGNIZER 바쁨"
+                SpeechRecognizer.ERROR_SERVER -> "서버 에러"
+                SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "시간 초과"
+                SpeechRecognizer.ERROR_NO_MATCH -> "찾을 수 없음"
+                else -> "알수 없음"
+            }
+
+            Toast.makeText(this@MainAct, message, Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onResults(results: Bundle?) {
+
+            //STT
+            val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+            if (matches != null) {
+                for (i in 0 until matches.size) {
+                    binding.tvResult.text = matches[i]
+                }
+            }
+        }
+
+
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 뷰 바인딩 (View Binding)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setInitialize()
+
+        binding.btnTts.setOnClickListener {
+            tts?.speak(
+                "88번 버스가 진입중입니다 이 버스가 맞습니까? 소리가 나면 예 아니오로 대답해",
+                TextToSpeech.QUEUE_FLUSH,
+                null,
+                null
+            )
+        }
+
+        binding.btnStt.setOnClickListener {
+            recognizer.startListening(intent)
+        }
+
     }
 
     /**
@@ -65,6 +128,15 @@ class MainAct : AppCompatActivity() , View.OnTouchListener {
         binding.apply {
             tvTtsMsg.visibility = View.INVISIBLE
         }
+
+        tts = TextToSpeech(this, this)
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, packageName)
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
+
+        recognizer = SpeechRecognizer.createSpeechRecognizer(this)
+        recognizer.setRecognitionListener(recognitionListener)
+
     }
 
     /**
@@ -95,7 +167,8 @@ class MainAct : AppCompatActivity() , View.OnTouchListener {
                 android.Manifest.permission.ACCESS_FINE_LOCATION,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION,
                 android.Manifest.permission.BLUETOOTH,
-                android.Manifest.permission.BLUETOOTH_ADMIN
+                android.Manifest.permission.BLUETOOTH_ADMIN,
+                android.Manifest.permission.RECORD_AUDIO
             )
             .setRationaleTitle("권한을 허용하셔야 사용하실수 있습니다.")
             .check()
@@ -179,7 +252,8 @@ class MainAct : AppCompatActivity() , View.OnTouchListener {
     private fun BeaconService.beaconScanFiltering(busList: List<MinewBeacon>) {
 
         for (uuid in busUUIDBeaconList) {
-            val beacon: MinewBeacon = (busList as MutableList<MinewBeacon>).getBusBeacon(uuid) ?: return
+            val beacon: MinewBeacon =
+                (busList as MutableList<MinewBeacon>).getBusBeacon(uuid) ?: return
             myCurrentBusList.add(beacon)
         }
 
@@ -209,7 +283,7 @@ class MainAct : AppCompatActivity() , View.OnTouchListener {
     }
 
     private fun setEnabledRootTouch(isTouchEnabled: Boolean) {
-        if(!isTouchEnabled)
+        if (!isTouchEnabled)
             binding.layoutRoot.setOnTouchListener(null)
         else
             binding.layoutRoot.setOnTouchListener(this)
@@ -289,9 +363,9 @@ class MainAct : AppCompatActivity() , View.OnTouchListener {
 
 //        if (내가 선택한 버스가 접근할시) {
         when {
-            this < - 150 -> vibration(2000, 5, repeat)
+            this < -150 -> vibration(2000, 5, repeat)
             this < -120 -> vibration(1500, 10, repeat)
-            this < -100 -> vibration(1250,15, repeat)
+            this < -100 -> vibration(1250, 15, repeat)
             this < -80 -> vibration(1000, 20, repeat)
             this < -70 -> vibration(750, 80, repeat)
             this < -80 -> vibration(500, 150, repeat)
@@ -320,11 +394,12 @@ class MainAct : AppCompatActivity() , View.OnTouchListener {
                 )
             )
             return
+        } else {
+            beaconService?.vib?.vibrate(
+                longArrayOf(timings, 1000, timings, 1000),
+                repeat
+            )
         }
-        beaconService?.vib?.vibrate(
-            longArrayOf(timings, 1000, timings, 1000),
-            repeat
-        )
     }
 
     override fun onResume() {
@@ -335,6 +410,14 @@ class MainAct : AppCompatActivity() , View.OnTouchListener {
     override fun onPause() {
         super.onPause()
         systemBLEDialogCheck = true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (tts != null) {
+            tts?.stop()
+            tts?.shutdown()
+        }
     }
 
     // =================== Touch Area =================== //
@@ -363,9 +446,7 @@ class MainAct : AppCompatActivity() , View.OnTouchListener {
                                 Log.e("SWIPE", "LEFT TO RIGHT")
                                 // FLAG YES
                                 setYesAction()
-                            }
-
-                            else {
+                            } else {
                                 Log.e("SWIPE", "RIGHT TO LEFT")
                                 // FLAG NO
                                 setNoAction()
@@ -421,7 +502,38 @@ class MainAct : AppCompatActivity() , View.OnTouchListener {
         }
     }
 
+    //TTS Listener
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            val result = tts?.setLanguage(Locale.KOREA)
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+
+                val installIntent = Intent()
+                installIntent.action = TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA
+                startActivity(installIntent)
+
+                Toast.makeText(this, "설정 체크", Toast.LENGTH_SHORT).show()
+            } else {
+
+//                tts?.setPitch(0.5f)
+//                tts?.setSpeechRate(0.4f)
+
+                //다른곳에서도 이방식으로 사용
+//                tts?.speak(
+//                    "88번 버스가 진입중입니다 이 버스가 맞습니까? 소리가 나면 예 아니오로 대답해",
+//                    TextToSpeech.QUEUE_FLUSH,
+//                    null,
+//                    null
+//                )
+            }
+        } else {
+            // 실패
+        }
+    }
 
 
-
+    companion object {
+        const val FIRST_BUS_PROXIMITY_AREA = -470
+        const val REQUEST_ENABLE_BT = 1231
+    }
 }
