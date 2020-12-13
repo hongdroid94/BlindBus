@@ -20,7 +20,7 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="회원가입"
+            android:text="@string/REGISTER"
             android:textColor="#fff"
             android:textSize="20sp"
             android:fontFamily="@font/noto_regular"
@@ -70,7 +70,7 @@
             android:id="@+id/et_name"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="사용자 이름"
+            android:hint="@string/INPUT_FIELD_USER_NAME"
             android:inputType="textEmailAddress"
             android:fontFamily="@font/noto_regular"
             android:includeFontPadding="false"
@@ -96,7 +96,7 @@
             android:id="@+id/et_id"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="이메일 아이디"
+            android:hint="@string/INPUT_FIELD_EMAIL"
             android:inputType="textEmailAddress"
             android:fontFamily="@font/noto_regular"
             android:includeFontPadding="false"
@@ -127,7 +127,7 @@
             android:maxLines="1"
             android:maxLength="20"
             android:textColor="#000"
-            android:hint="비밀번호"
+            android:hint="@string/INPUT_FIELD_PASSWORD"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 

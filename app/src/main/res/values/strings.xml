@@ -1,4 +1,15 @@
 <resources>
-    <string name="app_name">BlindBus</string>
-    <string name="busNumber">%s번</string>
+    <string name="app_name">BLIND BUS</string>
+    <string name="BUS_NUMBER">%s번</string>
+    <string name="EMPTY_INPUT_FIELD">입력되지 않는 필드가 존재합니다.</string>
+    <string name="NOT_MATCHED_EMAIL_TYPE">이메일 형식에 맞지 않습니다.</string>
+    <string name="INVALID_LOGIN_INFO">아이디나 비밀번호가 올바르지 않습니다\n잠시 후 다시 시도해주세요</string>
+    <string name="MSG_LOGIN">환영 합니다 ! 로그인을 해주세요</string>
+    <string name="INPUT_FIELD_EMAIL">이메일 아이디</string>
+    <string name="INPUT_FIELD_PASSWORD">비밀번호</string>
+    <string name="MSG_FORGOT_PASSWORD">비밀번호를 잊으셨나요?</string>
+    <string name="LOGIN">로그인</string>
+    <string name="MSG_REGISTER">계정이 없으신가요? 회원가입</string>
+    <string name="REGISTER">회원가입</string>
+    <string name="INPUT_FIELD_USER_NAME">사용자 이름</string>
 </resources>

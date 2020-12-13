@@ -17,7 +17,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:theme="@style/Theme.AppCompat.Light">
 
         <activity android:name=".ui.activity.SplashAct">
             <intent-filter>
@@ -30,8 +30,6 @@
         <activity android:name=".ui.activity.MainAct" />
         <activity android:name=".ui.activity.LoginAct"/>
         <activity android:name=".ui.activity.RegisterAct"/>
-
-
 
     </application>
 

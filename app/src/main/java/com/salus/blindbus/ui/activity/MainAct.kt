@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter
 import android.content.*
 import android.os.*
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.gun0912.tedpermission.PermissionListener
@@ -17,7 +18,6 @@ import com.salus.blindbus.common.getBusBeacon
 import com.salus.blindbus.common.getBusStopName
 import com.salus.blindbus.databinding.ActivityMainBinding
 import com.salus.blindbus.service.BeaconService
-import com.salus.blindbus.util.SharedManager
 import com.salus.blindbus.util.toastLongShow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,49 +27,57 @@ import kotlinx.coroutines.launch
  * 메인 화면
  */
 
-class MainAct : AppCompatActivity() {
+class MainAct : AppCompatActivity() , View.OnTouchListener {
 
     companion object {
         const val FIRST_BUS_PROXIMITY_AREA = -470
         const val REQUEST_ENABLE_BT = 1231
     }
 
+    // about binding object
+    private lateinit var binding : ActivityMainBinding
+
+    // about beacon service
     private var beaconService: BeaconService? = null
     private lateinit var bindConnection: ServiceConnection
     private var bluetoothAdapter: BluetoothAdapter? = null
-
     private var systemBLEDialogCheck = false
+
+    // about touch root view
+    private var iTouchDownX = 0f
+    private var iTouchDownY = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 뷰 바인딩 (View Binding)
-        val binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setInitialize(binding)
-
+        setInitialize()
     }
 
-    private fun setInitialize(binding: ActivityMainBinding) {
-        setTedPermission(binding)
+    /**
+     * 초기화
+     */
+    private fun setInitialize() {
+        setTedPermission()
 
         //TODO : 비콘이 스캐닝 콜백이 완성 되었을 때 Visible 처리 필요
         binding.apply {
-            frameCompleteScan.visibility = View.INVISIBLE
-            tvGuideMsg.visibility = View.VISIBLE
+            tvTtsMsg.visibility = View.INVISIBLE
         }
     }
 
-    private fun setTedPermission(binding: ActivityMainBinding) {
+    /**
+     * 권한 설정
+     */
+    private fun setTedPermission() {
         setPermission {
             setBluetoothAdapter()
             setBindConnection()
             startBindService()
-            setBtnBusTrackingNoButtonClickEvent(binding)
-            setBtnBusTrackingYesButtonClickEvent(binding)
-            beaconScanBegin(binding)
+            beaconScanBegin()
         }
     }
-
 
     private fun setPermission(afterLogic: () -> Unit) {
         val perMissionListener = object : PermissionListener {
@@ -83,14 +91,15 @@ class MainAct : AppCompatActivity() {
         }
         TedPermission.with(this@MainAct)
             .setPermissionListener(perMissionListener)
-            .setPermissions(android.Manifest.permission.ACCESS_FINE_LOCATION,
+            .setPermissions(
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION,
                 android.Manifest.permission.BLUETOOTH,
-                android.Manifest.permission.BLUETOOTH_ADMIN)
+                android.Manifest.permission.BLUETOOTH_ADMIN
+            )
             .setRationaleTitle("권한을 허용하셔야 사용하실수 있습니다.")
             .check()
     }
-
 
     private fun setBluetoothAdapter() {
         bluetoothAdapter ?: BluetoothAdapter.getDefaultAdapter().also {
@@ -98,47 +107,9 @@ class MainAct : AppCompatActivity() {
         }
     }
 
-    private fun setBtnBusTrackingNoButtonClickEvent(binding: ActivityMainBinding) {
-
-        binding.apply {
-            btnBusTrackingNoButton.setOnClickListener {
-                beaconService?.apply {
-                    myCancelBusUUIDList.add(myCurrentBusList.last().getBeaconUUID())
-                    myCurrentBusList.removeAt(myCurrentBusList.lastIndex)
-
-                    if (myCurrentBusList.isNullOrEmpty()) {
-                        for (i in 0 until root.childCount) {
-                            root.getChildAt(i).visibility = View.GONE
-                        }
-                    } else {
-                        tvBusNumber.text = resources.getString(R.string.busNumber).format(
-                            myCurrentBusList.last().getBusStopName()
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    private fun setBtnBusTrackingYesButtonClickEvent(binding: ActivityMainBinding) {
-        binding.apply {
-            btnBusTrackingYesButton.setOnClickListener {
-                beaconService?.apply {
-                    trackingModeUUID = myCurrentBusList.last().getBeaconUUID()
-
-                    for (i in 0 until root.childCount) {
-                        root.getChildAt(i).visibility = View.GONE
-                        myCurrentBusList.clear()
-                        myCancelBusUUIDList.clear()
-                    }
-                }
-            }
-        }
-    }
-
-    private fun beaconScanBegin(binding: ActivityMainBinding) {
+    private fun beaconScanBegin() {
         CoroutineScope(Dispatchers.Main).launch {
-            beaconService ?: beaconScanBegin(binding)
+            beaconService ?: beaconScanBegin()
             beaconService?.apply {
                 vib = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
                 mMinewBeaconManager = MinewBeaconManager.getInstance(this)
@@ -160,7 +131,7 @@ class MainAct : AppCompatActivity() {
                     override fun onRangeBeacons(minewBeacons: MutableList<MinewBeacon>?) {
                         Log.d("salusTest_1second_scan", "1초마다 스캔중 일때 호출")
 
-                        if(!bluetoothAdapter!!.isEnabled && !systemBLEDialogCheck)
+                        if (!bluetoothAdapter!!.isEnabled && !systemBLEDialogCheck)
                             enableDisableBT()
 
                         /**TODO: 미래에 이부분에 비콘LIST를 받으면 서버에 UUID를 보내서 버스 UUID리스트만
@@ -178,13 +149,14 @@ class MainAct : AppCompatActivity() {
                         val busList = minewBeacons?.filter {
                             it.getBeaconValue(
                                 BeaconValueIndex
-                                .MinewBeaconValueIndex_RSSI).intValue > FIRST_BUS_PROXIMITY_AREA
+                                    .MinewBeaconValueIndex_RSSI
+                            ).intValue > FIRST_BUS_PROXIMITY_AREA
                         }
                         if (busList.isNullOrEmpty())
                             return
 
                         beaconScanFiltering(busList)
-                        setYesAndNo(binding)
+                        setYesAndNo()
                     }
 
                     override fun onUpdateState(state: BluetoothState?) {
@@ -204,7 +176,6 @@ class MainAct : AppCompatActivity() {
         }
     }
 
-
     private fun BeaconService.beaconScanFiltering(busList: List<MinewBeacon>) {
 
         for (uuid in busUUIDBeaconList) {
@@ -221,7 +192,7 @@ class MainAct : AppCompatActivity() {
             return
     }
 
-    private fun BeaconService.setYesAndNo(binding: ActivityMainBinding) {
+    private fun BeaconService.setYesAndNo() {
         if (myCurrentBusList.isNotEmpty()) {
             binding.apply {
                 for (i in 0 until root.childCount)
@@ -229,13 +200,20 @@ class MainAct : AppCompatActivity() {
 
                 myCurrentBusList.sortBy { it.getBeaconRSSI() }
 
-                tvBusNumber.text = resources.getString(R.string.busNumber).format(
+                setEnabledRootTouch(true)
+                tvTtsMsg.text = resources.getString(R.string.busNumber).format(
                     myCurrentBusList.last().getBusStopName()
                 )
             }
         }
     }
 
+    private fun setEnabledRootTouch(isTouchEnabled: Boolean) {
+        if(!isTouchEnabled)
+            binding.layoutRoot.setOnTouchListener(null)
+        else
+            binding.layoutRoot.setOnTouchListener(this)
+    }
 
     private fun setBindConnection() {
         bindConnection = object : ServiceConnection {
@@ -249,7 +227,6 @@ class MainAct : AppCompatActivity() {
         }
     }
 
-
     private fun startBindService() {
         Intent(this, BeaconService::class.java).let {
             this.bindService(
@@ -259,7 +236,6 @@ class MainAct : AppCompatActivity() {
             )
         }
     }
-
 
     private fun enableDisableBT() {
 
@@ -309,8 +285,6 @@ class MainAct : AppCompatActivity() {
         }
     }
 
-
-
     private fun Int.vibrationIntensity(repeat: Int) {
 
 //        if (내가 선택한 버스가 접근할시) {
@@ -328,7 +302,6 @@ class MainAct : AppCompatActivity() {
 //            vib.cancel()
 //        }
     }
-
 
     private fun vibration(timings: Long, amplitude: Int, repeat: Int) {
 
@@ -349,7 +322,6 @@ class MainAct : AppCompatActivity() {
             longArrayOf(timings, 1000, timings, 1000),
             repeat
         )
-
     }
 
     override fun onResume() {
@@ -361,4 +333,92 @@ class MainAct : AppCompatActivity() {
         super.onPause()
         systemBLEDialogCheck = true
     }
+
+    // =================== Touch Area =================== //
+    override fun onTouch(view: View, event: MotionEvent): Boolean {
+        var iTouchUpX = 0f
+        var iTouchUpY = 0f
+        when (view.id) {
+            R.id.layout_root -> {
+                Log.e("onTouch", "root_layout Area")
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        iTouchDownX = event.x
+                        iTouchDownY = event.y
+                    }
+                    MotionEvent.ACTION_UP -> {
+                        iTouchUpX = event.x
+                        iTouchUpY = event.y
+                        Log.e("iTouchUpX", iTouchUpX.toString())
+                        Log.e("iTouchDownX", iTouchDownX.toString())
+                        Log.e("result", (iTouchUpX - iTouchDownX).toString())
+                        val resultX: Float = iTouchUpX - iTouchDownX
+                        if (Math.abs(resultX) > 100) { // 숫자를 조정하면 Swipe 허용 범위를 변경할 수 있다.
+                            // Swipe Action 일 경우..
+                            Log.e("onTouch", "============== SWIPE EVENT ==============")
+                            if (resultX > 0) {
+                                Log.e("SWIPE", "LEFT TO RIGHT")
+                                // FLAG YES
+                                setYesAction()
+                            }
+
+                            else {
+                                Log.e("SWIPE", "RIGHT TO LEFT")
+                                // FLAG NO
+                                setNoAction()
+
+                            }
+
+                        }
+                        // Yes Or No의 기능을 수행하고나면 스와이프 이벤트는 받을 필요없으므로 block 처리
+                        setEnabledRootTouch(false)
+                    }
+                }
+            }
+        }
+        return true
+    }
+
+    /**
+     * 사용자가 예 스와이프 액션을 취했을 시..
+     */
+    private fun setYesAction() {
+        binding.apply {
+            beaconService?.apply {
+                myCancelBusUUIDList.add(myCurrentBusList.last().getBeaconUUID())
+                myCurrentBusList.removeAt(myCurrentBusList.lastIndex)
+
+                if (myCurrentBusList.isNullOrEmpty()) {
+                    for (i in 0 until root.childCount) {
+                        root.getChildAt(i).visibility = View.GONE
+                    }
+                } else {
+                    tvTtsMsg.text = resources.getString(R.string.busNumber).format(
+                        myCurrentBusList.last().getBusStopName()
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * 사용자가 아니오 스와이프 액션을 취했을 시..
+     */
+    private fun setNoAction() {
+        binding.apply {
+            beaconService?.apply {
+                trackingModeUUID = myCurrentBusList.last().getBeaconUUID()
+
+                for (i in 0 until root.childCount) {
+                    root.getChildAt(i).visibility = View.GONE
+                    myCurrentBusList.clear()
+                    myCancelBusUUIDList.clear()
+                }
+            }
+        }
+    }
+
+
+
+
 }
