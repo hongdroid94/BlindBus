@@ -4,11 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
-import com.salus.blindbus.api.MainApi
+import com.salus.blindbus.database.api.MainApi
 import com.salus.blindbus.databinding.ActivityLoginBinding
-import com.salus.blindbus.model.ResponseModel
+import com.salus.blindbus.database.model.ResponseModel
 import com.salus.blindbus.util.SharedManager
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

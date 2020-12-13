@@ -1,4 +1,4 @@
-package com.salus.blindbus.creator
+package com.salus.blindbus.database.creator
 
 import androidx.viewbinding.BuildConfig
 import okhttp3.OkHttpClient

@@ -34,6 +34,11 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
 }
 
 dependencies {
@@ -63,6 +68,11 @@ dependencies {
     // lottie animtaion
     def lottieVersion = '3.4.0'
     implementation "com.airbnb.android:lottie:$lottieVersion"
+    //미뉴 라이브러리
+    implementation files('libs/minewBeaconScan.jar')
+    //코루틴
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

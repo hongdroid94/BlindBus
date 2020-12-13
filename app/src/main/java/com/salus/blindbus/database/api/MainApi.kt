@@ -1,7 +1,7 @@
-package com.salus.blindbus.api
+package com.salus.blindbus.database.api
 
-import com.salus.blindbus.creator.RetrofitCreator
-import com.salus.blindbus.model.ResponseModel
+import com.salus.blindbus.database.creator.RetrofitCreator
+import com.salus.blindbus.database.model.ResponseModel
 import io.reactivex.Observable
 import retrofit2.http.*
 

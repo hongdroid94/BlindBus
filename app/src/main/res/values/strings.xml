@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BlindBus</string>
+    <string name="busNumber">%s번</string>
 </resources>

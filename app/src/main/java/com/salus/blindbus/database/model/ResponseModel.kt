@@ -1,4 +1,4 @@
-package com.salus.blindbus.model
+package com.salus.blindbus.database.model
 
 import com.google.gson.annotations.SerializedName
 
