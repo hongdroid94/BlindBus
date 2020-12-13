@@ -31,8 +31,6 @@
         <activity android:name=".ui.activity.LoginAct"/>
         <activity android:name=".ui.activity.RegisterAct"/>
 
-
-
     </application>
 
 </manifest>

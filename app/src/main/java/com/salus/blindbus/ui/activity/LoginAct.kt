@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.salus.blindbus.R
 import com.salus.blindbus.database.api.MainApi
 import com.salus.blindbus.databinding.ActivityLoginBinding
 import com.salus.blindbus.database.model.ResponseModel
@@ -45,12 +46,12 @@ class LoginAct : AppCompatActivity() {
                 val strPw : String = etPwd.text.toString()
                 // check empty input field
                 if (strId.isEmpty() || strPw.isEmpty()) {
-                    Toast.makeText(this@LoginAct, "입력되지 않는 필드가 존재합니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LoginAct, getString(R.string.EMPTY_INPUT_FIELD), Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
                 // check email type pattern
                 if(!isCheckEmail(strId)) {
-                    Toast.makeText(this@LoginAct, "이메일 형식에 맞지 않습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LoginAct, getString(R.string.NOT_MATCHED_EMAIL_TYPE), Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
@@ -73,7 +74,7 @@ class LoginAct : AppCompatActivity() {
                                 startActivity(loginIntent)
                                 finish()
                             } else {
-                                Toast.makeText(this@LoginAct, "아이디나 비밀번호가 올바르지 않습니다\n잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@LoginAct, getString(R.string.INVALID_LOGIN_INFO), Toast.LENGTH_SHORT).show()
                             }
 //                        Toast.makeText(this@RegisterAct, "Response ${response.success} ${response.userID} ${response.userPassword}", Toast.LENGTH_SHORT).show()
                         }, { error: Throwable ->

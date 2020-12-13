@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/layout_root"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="#000"
@@ -7,117 +9,17 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/tv_guide_msg"
+        android:id="@+id/tv_tts_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="버스가 근처에 오면\n알려 드릴게요 :)"
+        tools:text="TTS MESSAGE"
+        android:textSize="30sp"
         android:fontFamily="@font/noto_black"
-        android:textAlignment="center"
-        android:visibility="invisible"
-        android:includeFontPadding="false"
-        android:textSize="50sp"
         android:textColor="#fff"
-        app:layout_constraintBottom_toTopOf="@+id/lottie_radar"
-        app:layout_constraintEnd_toEndOf="@+id/lottie_radar"
-        app:layout_constraintStart_toStartOf="@+id/lottie_radar" />
-
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/lottie_radar"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        app:lottie_loop="true"
-        app:lottie_autoPlay="true"
+        android:includeFontPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:lottie_rawRes="@raw/radar" />
-
-    <FrameLayout
-        android:id="@+id/frame_complete_scan"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/btn_busTrackingYesButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="예"
-                android:layout_weight="1"
-                android:textSize="100sp"
-                android:textColor="#fff"
-                android:fontFamily="@font/noto_black"
-                android:foreground="?attr/selectableItemBackground"
-                android:background="#1DE9B6"
-                android:textAlignment="center"
-                android:gravity="center" />
-
-            <TextView
-                android:id="@+id/btn_busTrackingNoButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="아니오"
-                android:foreground="?attr/selectableItemBackground"
-                android:fontFamily="@font/noto_black"
-                android:background="#FF1744"
-                android:textSize="100sp"
-                android:textColor="#fff"
-                android:textAlignment="center"
-                android:gravity="center" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/tv_busNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:background="#aa000000"
-                android:fontFamily="@font/noto_black"
-                android:includeFontPadding="false"
-                android:text="%%번"
-                android:textAlignment="center"
-                android:textColor="#fff"
-                android:textSize="85sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:background="#aa000000"
-                android:fontFamily="@font/noto_black"
-                android:includeFontPadding="false"
-                android:text="탑승하시겠습니까?"
-                android:textAlignment="center"
-                android:textColor="#fff"
-                android:textSize="40sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-    </FrameLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
