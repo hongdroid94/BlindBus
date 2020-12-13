@@ -315,6 +315,9 @@ class MainAct : AppCompatActivity() {
 
 //        if (내가 선택한 버스가 접근할시) {
         when {
+            this < - 150 -> vibration(2000, 5, repeat)
+            this < -120 -> vibration(1500, 10, repeat)
+            this < -100 -> vibration(1250,15, repeat)
             this < -80 -> vibration(1000, 20, repeat)
             this < -70 -> vibration(750, 80, repeat)
             this < -80 -> vibration(500, 150, repeat)
