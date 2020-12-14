@@ -11,6 +11,7 @@ import com.minew.beacon.MinewBeacon
 import com.minew.beacon.MinewBeaconManager
 import com.salus.blindbus.database.model.UserRssi
 import com.salus.blindbus.ui.activity.MainAct
+import com.salus.blindbus.ui.activity.MainAct.Companion.BUS_CATCH_MODE
 import java.util.*
 
 class BeaconService : Service() {
@@ -24,9 +25,12 @@ class BeaconService : Service() {
 
     val myCurrentBusList = mutableListOf<MinewBeacon>()
     val myCancelBusUUIDList = mutableListOf<String>()
+    var finishCheckList:MutableList<Boolean> = mutableListOf()
+
     var trackingModeUUID:String? =null
     var busUUIDBeaconList = mutableListOf("E2C56DB5-DFFB-48D2-B060-D0F5A71096E0")
-
+    var SSTReturnValue:String? = null
+    var currentBusMode:Int?= BUS_CATCH_MODE
     lateinit var vib: Vibrator
     fun setInitService() {
         val intent = Intent(this@BeaconService, MainAct::class.java)

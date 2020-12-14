@@ -49,7 +49,6 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
     private var iTouchDownX = 0f
     private var iTouchDownY = 0f
 
-
     //TTS
     private var tts: TextToSpeech? = null
 
@@ -88,6 +87,8 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
             if (matches != null) {
                 for (i in 0 until matches.size) {
                     binding.tvResult.text = matches[i]
+
+                    beaconService?.SSTReturnValue = matches[i] ?: return
                 }
             }
         }
@@ -103,18 +104,18 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
         setContentView(binding.root)
         setInitialize()
 
-        binding.btnTts.setOnClickListener {
-            tts?.speak(
-                "88번 버스가 진입중입니다 이 버스가 맞습니까? 소리가 나면 예 아니오로 대답해",
-                TextToSpeech.QUEUE_FLUSH,
-                null,
-                null
-            )
-        }
-
-        binding.btnStt.setOnClickListener {
-            recognizer.startListening(intent)
-        }
+//        binding.btnTts.setOnClickListener {
+//            tts?.speak(
+//                "88번 버스가 진입중입니다 이 버스가 맞습니까? 소리가 나면 예 아니오로 대답해",
+//                TextToSpeech.QUEUE_FLUSH,
+//                null,
+//                null
+//            )
+//        }
+//
+//        binding.btnStt.setOnClickListener {
+//            recognizer.startListening(intent)
+//        }
 
     }
 
@@ -136,7 +137,6 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
         recognizer = SpeechRecognizer.createSpeechRecognizer(this)
         recognizer.setRecognitionListener(recognitionListener)
-
     }
 
     /**
@@ -162,16 +162,16 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
             }
         }
         TedPermission.with(this@MainAct)
-            .setPermissionListener(perMissionListener)
-            .setPermissions(
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                android.Manifest.permission.BLUETOOTH,
-                android.Manifest.permission.BLUETOOTH_ADMIN,
-                android.Manifest.permission.RECORD_AUDIO
-            )
-            .setRationaleTitle("권한을 허용하셔야 사용하실수 있습니다.")
-            .check()
+                .setPermissionListener(perMissionListener)
+                .setPermissions(
+                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                        android.Manifest.permission.BLUETOOTH,
+                        android.Manifest.permission.BLUETOOTH_ADMIN,
+                        android.Manifest.permission.RECORD_AUDIO
+                )
+                .setRationaleTitle("권한을 허용하셔야 사용하실수 있습니다.")
+                .check()
     }
 
     private fun setBluetoothAdapter() {
@@ -191,7 +191,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                 bluetoothAdapter!!.enable()
                 mMinewBeaconManager!!.startScan()
                 mMinewBeaconManager!!.setDeviceManagerDelegateListener(object :
-                    MinewBeaconManagerListener {
+                        MinewBeaconManagerListener {
 
                     override fun onAppearBeacons(minewBeacons: MutableList<MinewBeacon>?) {
                         toastLongShow("새로운 스캔을 했을때 호출")
@@ -215,14 +215,27 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                                 it.getBeaconUUID() == trackingModeUUID
                             }
                             trackingBeacon?.getBeaconRSSI()?.vibrationIntensity(REPEAT_OK)
+
+                            trackingBeacon?:return
+                            if (trackingBeacon.getBeaconRSSI() > -75) {
+                                finishCheckList.add(true)
+                            } else
+                                finishCheckList.clear()
+
+                            if (finishCheckList.size > 4) {
+                                //도착 탑승 묻기
+                                setEnabledRootTouch(true)
+                                beaconService?.currentBusMode = BUS_FINISH_MODE
+                                if(!tts!!.isSpeaking)
+                                tts?.speak("탑승 완료 체크하시겠습니까?", TextToSpeech.QUEUE_FLUSH, null, null)
+                            }
                             return
                         }
 
-
                         val busList = minewBeacons?.filter {
                             it.getBeaconValue(
-                                BeaconValueIndex
-                                    .MinewBeaconValueIndex_RSSI
+                                    BeaconValueIndex
+                                            .MinewBeaconValueIndex_RSSI
                             ).intValue > FIRST_BUS_PROXIMITY_AREA
                         }
                         if (busList.isNullOrEmpty())
@@ -230,6 +243,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
                         beaconScanFiltering(busList)
                         setYesAndNo()
+
                     }
 
                     override fun onUpdateState(state: BluetoothState?) {
@@ -253,13 +267,13 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
         for (uuid in busUUIDBeaconList) {
             val beacon: MinewBeacon =
-                (busList as MutableList<MinewBeacon>).getBusBeacon(uuid) ?: return
+                    (busList as MutableList<MinewBeacon>).getBusBeacon(uuid) ?: return
             myCurrentBusList.add(beacon)
         }
 
         for (deleteUUid in myCancelBusUUIDList)
             myCurrentBusList.remove(
-                myCurrentBusList.toMutableList().getBusBeacon(deleteUUid)
+                    myCurrentBusList.toMutableList().getBusBeacon(deleteUUid)
             )
 
         if (myCurrentBusList.isNullOrEmpty())
@@ -276,8 +290,11 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
                 setEnabledRootTouch(true)
                 tvTtsMsg.text = resources.getString(R.string.BUS_NUMBER).format(
-                    myCurrentBusList.last().getBusStopName()
+                        myCurrentBusList.last().getBusStopName()
                 )
+                if(!tts!!.isSpeaking)
+                tts?.speak("${myCurrentBusList.last().getBusStopName()}번 버스에 탑승하시나요?",
+                        TextToSpeech.QUEUE_FLUSH, null, null)
             }
         }
     }
@@ -304,9 +321,9 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
     private fun startBindService() {
         Intent(this, BeaconService::class.java).let {
             this.bindService(
-                it,
-                bindConnection,
-                Context.BIND_AUTO_CREATE
+                    it,
+                    bindConnection,
+                    Context.BIND_AUTO_CREATE
             )
         }
     }
@@ -331,27 +348,27 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
                     BluetoothAdapter.STATE_ON ->
                         Log.d(
-                            "blueToothChangeCheck",
-                            "onReceive State On"
+                                "blueToothChangeCheck",
+                                "onReceive State On"
                         )
 
                     BluetoothAdapter.STATE_OFF ->
                         Log.d(
-                            "blueToothChangeCheck",
-                            "onReceive State Off"
+                                "blueToothChangeCheck",
+                                "onReceive State Off"
                         )
 
                     BluetoothAdapter.STATE_TURNING_ON ->
                         Log.d(
-                            "blueToothChangeCheck",
-                            "onReceive turning on"
+                                "blueToothChangeCheck",
+                                "onReceive turning on"
                         )
 
                     BluetoothAdapter.STATE_TURNING_OFF -> {
                         enableDisableBT()
                         Log.d(
-                            "blueToothChangeCheck",
-                            "onReceive turning off"
+                                "blueToothChangeCheck",
+                                "onReceive turning off"
                         )
                     }
                 }
@@ -361,44 +378,49 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
     private fun Int.vibrationIntensity(repeat: Int) {
 
+
 //        if (내가 선택한 버스가 접근할시) {
         when {
-            this < -150 -> vibration(2000, 5, repeat)
-            this < -120 -> vibration(1500, 10, repeat)
-            this < -100 -> vibration(1250, 15, repeat)
-            this < -80 -> vibration(1000, 20, repeat)
-            this < -70 -> vibration(750, 80, repeat)
-            this < -80 -> vibration(500, 150, repeat)
-            this < -60 -> vibration(50, 255, repeat)
+            this < -150 -> vibration(2000, 5, repeat, 200)
+            this < -120 -> vibration(1500, 10, repeat, 120)
+            this < -100 -> vibration(1250, 15, repeat, 70)
+            this < -100 -> vibration(1000, 20, repeat, 4)
+            this < -90 -> vibration(750, 80, repeat, 3)
+            this < -80 -> vibration(500, 150, repeat, 2)
+            this < -70 -> vibration(50, 255, repeat, 1)
             else -> {
                 //버스에 탑승 완료를 하거나 버스가 떠났을시
                 beaconService?.vib?.cancel()
             }
         }
-//        } else {
-//            vib.cancel()
-//        }
+
     }
 
-    private fun vibration(timings: Long, amplitude: Int, repeat: Int) {
+    private fun vibration(timings: Long, amplitude: Int, repeat: Int, currentDistance: Int) {
 
+        fun distanceTTS() {
+            tts?:return
+            if (!tts!!.isSpeaking)
+                tts?.speak("버스까지 ${currentDistance}미터 남았습니다.", TextToSpeech.QUEUE_FLUSH, null, null)
+        }
         //timings 진동의 진행 시간
         //amplitude 진동의 세기
         //repeat 진동의 반복 flag
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             beaconService?.vib?.vibrate(
-                VibrationEffect.createWaveform(
-                    longArrayOf(timings, 1000, timings, 1000),
-                    intArrayOf(0, amplitude, 0, amplitude),
-                    repeat
-                )
+                    VibrationEffect.createWaveform(
+                            longArrayOf(timings, 1000, timings, 1000),
+                            intArrayOf(0, amplitude, 0, amplitude),
+                            repeat
+                    )
             )
-            return
+            distanceTTS()
         } else {
             beaconService?.vib?.vibrate(
-                longArrayOf(timings, 1000, timings, 1000),
-                repeat
+                    longArrayOf(timings, 1000, timings, 1000),
+                    repeat
             )
+            distanceTTS()
         }
     }
 
@@ -445,11 +467,19 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                             if (resultX > 0) {
                                 Log.e("SWIPE", "LEFT TO RIGHT")
                                 // FLAG YES
-                                setYesAction()
+                                when (beaconService!!.currentBusMode) {
+                                    BUS_CATCH_MODE -> setYesAction()
+                                    BUS_FINISH_MODE -> setFinishYesButton()
+                                }
+
+
                             } else {
                                 Log.e("SWIPE", "RIGHT TO LEFT")
                                 // FLAG NO
-                                setNoAction()
+                                when (beaconService!!.currentBusMode) {
+                                    BUS_CATCH_MODE -> setNoAction()
+                                    BUS_FINISH_MODE -> setFinishNoButton()
+                                }
 
                             }
 
@@ -466,29 +496,44 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
     /**
      * 사용자가 예 스와이프 액션을 취했을 시..
      */
-    private fun setYesAction() {
+    private fun setNoAction() {
         binding.apply {
             beaconService?.apply {
+
                 myCancelBusUUIDList.add(myCurrentBusList.last().getBeaconUUID())
                 myCurrentBusList.removeAt(myCurrentBusList.lastIndex)
-
+                tts?.speak("취소하셨습니다.", TextToSpeech.QUEUE_FLUSH,
+                        null, null)
                 if (myCurrentBusList.isNullOrEmpty()) {
                     for (i in 0 until root.childCount) {
                         root.getChildAt(i).visibility = View.GONE
                     }
                 } else {
                     tvTtsMsg.text = resources.getString(R.string.BUS_NUMBER).format(
-                        myCurrentBusList.last().getBusStopName()
+                            myCurrentBusList.last().getBusStopName()
                     )
+                    tts?.speak("${beaconService?.trackingModeUUID?.getBusStopName()}번 버스를 따라갑니다.",
+                            TextToSpeech.QUEUE_FLUSH, null, null)
                 }
             }
+
         }
+    }
+
+    private fun setFinishNoButton() {
+        binding.apply {
+            tts?:return
+            if(!tts!!.isSpeaking)
+                tts?.speak("탑승체크가 재요청시 다시 확인해주세요.", TextToSpeech.QUEUE_FLUSH, null, null)
+            beaconService?.finishCheckList?.clear()
+        }
+
     }
 
     /**
      * 사용자가 아니오 스와이프 액션을 취했을 시..
      */
-    private fun setNoAction() {
+    private fun setYesAction() {
         binding.apply {
             beaconService?.apply {
                 trackingModeUUID = myCurrentBusList.last().getBeaconUUID()
@@ -501,6 +546,23 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
             }
         }
     }
+
+
+    private fun setFinishYesButton() {
+        binding.apply {
+            beaconService?.apply {
+                trackingModeUUID = null
+                finishCheckList.clear()
+                currentBusMode = BUS_CATCH_MODE
+                tts?:return
+                if(!tts!!.isSpeaking)
+                    tts?.speak("탑승 완료 하셨습니다", TextToSpeech.QUEUE_FLUSH, null, null)
+
+            }
+        }
+
+    }
+
 
     //TTS Listener
     override fun onInit(status: Int) {
@@ -535,5 +597,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
     companion object {
         const val FIRST_BUS_PROXIMITY_AREA = -470
         const val REQUEST_ENABLE_BT = 1231
+        const val BUS_CATCH_MODE = 8872
+        const val BUS_FINISH_MODE = 9999
     }
 }

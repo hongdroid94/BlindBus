@@ -22,3 +22,11 @@ fun MutableList<MinewBeacon>.getBusBeacon(checkUUID: String): MinewBeacon? {
         it.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_UUID).stringValue == checkUUID
     }
 }
+
+
+fun String.getBusStopName():String {
+    return when (this) {
+        "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0"->"22"
+        else -> "0"
+    }
+}
