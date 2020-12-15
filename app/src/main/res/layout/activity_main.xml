@@ -21,36 +21,17 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="TTS MESSAGE" />
 
-    <Button
-        android:id="@+id/btn_tts"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TTS"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_tts_msg" />
-
-    <Button
-        android:id="@+id/btn_stt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="STT"
-        app:layout_constraintBottom_toTopOf="@+id/btn_tts"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
 
     <TextView
         android:id="@+id/tv_result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
         android:textColor="@color/white"
         android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_tts" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_tts_msg" />
 
     <Button
         android:id="@+id/btn_logout"
@@ -65,5 +46,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#fff" />
+
+    <Button
+        android:id="@+id/btn_goToTheTestAct"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="비콘 데이터확인"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

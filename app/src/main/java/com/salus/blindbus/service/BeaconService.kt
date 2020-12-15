@@ -22,23 +22,37 @@ import java.util.*
 class BeaconService : Service() {
 
 
-
     private val localBinder = LocalBinder()
     var mMinewBeaconManager: MinewBeaconManager? = null
     val comp = UserRssi()
 
     val myCurrentBusList = mutableListOf<MinewBeacon>()
     val myCancelBusUUIDList = mutableListOf<String>()
-    var finishCheckList:MutableList<Boolean> = mutableListOf()
+    var finishCheckList: MutableList<Boolean> = mutableListOf()
 
-    var trackingModeUUID:String? = null
+    var trackingModeUUID: String? = null
+
+
+    //STT Listener
+    lateinit var yesEvent: (String) -> Unit
+    lateinit var noEvent: (String) -> Unit
+    lateinit var SSTfalseEvent: (String) -> Unit
+    lateinit var yesFinishEvent: (String) -> Unit
+    lateinit var noFinishEvent: (String) -> Unit
+    var STTuseingMode = 0
+
+    //TTS Response Delay
+    var voiceUse = false
+
+    //STT PlayING
+    var STTplaying = false
+
     // TODO: 버스도착정보 API를 연동해서 각 정류장에 들어오는 버스의 비콘 UUID를 자동으로 자료구조에 담도록 수정해야 함. ( 현재 하드코딩 상태 )
     var busUUIDBeaconList = mutableListOf("E2C56DB5-DFFB-48D2-B060-D0F5A71096E0") // 로너 비콘
 //    var busUUIDBeaconList = mutableListOf("74278BDA-B644-4520-8F0C-720EAF059935") // 아타 비콘1 (Blind_1)
 //    var busUUIDBeaconList = mutableListOf("AB8190D5-D11E-4941-ACC4-42F30510B408") // 아타 비콘2 (Blind_2)
 
-    var SSTReturnValue:String? = null
-    var currentBusMode:Int?= BUS_CATCH_MODE
+    var currentBusMode: Int? = BUS_CATCH_MODE
     lateinit var vib: Vibrator
 
 
@@ -80,7 +94,8 @@ class BeaconService : Service() {
 
 
         val intent = Intent(this@BeaconService, MainAct::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent =
+            PendingIntent.getActivity(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val builder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(android.R.drawable.ic_dialog_dialer)
@@ -94,6 +109,7 @@ class BeaconService : Service() {
 
         startForeground(FORE_BEACON_GROUND_SERVICE_ID, builder)
     }
+
     companion object {
         const val SERVICE_BEACON_CHANNEL_ID = "BeaconChannelID"
         const val FORE_BEACON_GROUND_SERVICE_ID = 191919
