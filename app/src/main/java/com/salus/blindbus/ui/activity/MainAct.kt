@@ -207,7 +207,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
             beaconService?.apply {
                 vib = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
                 mMinewBeaconManager = MinewBeaconManager.getInstance(this)
-                setInitService()
+                notificationCreate()
                 setBluetoothAdapter()
                 bluetoothAdapter!!.enable()
                 mMinewBeaconManager!!.startScan()
