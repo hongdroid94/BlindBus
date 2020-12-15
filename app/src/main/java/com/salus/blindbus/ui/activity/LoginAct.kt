@@ -67,8 +67,13 @@ class LoginAct : AppCompatActivity() {
 
                             if (response.success) {
                                 // save local DB for user account info
-                                SharedManager.write(SharedManager.AUTO_LOGIN, true)
+
+                                // set auto login
+                                if(chkAutoLogin.isChecked)
+                                    SharedManager.write(SharedManager.AUTO_LOGIN, true)
+
                                 SharedManager.write(SharedManager.USER_NAME, response.userName)
+
                                 Toast.makeText(this@LoginAct, "환영합니다 ${response.userName} 님 !", Toast.LENGTH_SHORT).show()
                                 val loginIntent = Intent(this@LoginAct, MainAct::class.java)
                                 startActivity(loginIntent)

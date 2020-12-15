@@ -2,6 +2,7 @@ package com.salus.blindbus.ui.activity
 
 import android.bluetooth.BluetoothAdapter
 import android.content.*
+import android.graphics.Color
 import android.os.*
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
@@ -11,6 +12,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
@@ -23,6 +25,7 @@ import com.salus.blindbus.common.getBusBeacon
 import com.salus.blindbus.common.getBusStopName
 import com.salus.blindbus.databinding.ActivityMainBinding
 import com.salus.blindbus.service.BeaconService
+import com.salus.blindbus.util.SharedManager
 import com.salus.blindbus.util.toastLongShow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -128,6 +131,24 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
         //TODO : 비콘이 스캐닝 콜백이 완성 되었을 때 Visible 처리 필요
         binding.apply {
             tvTtsMsg.visibility = View.INVISIBLE
+            btnLogout.setOnClickListener {
+                // 로그아웃
+                val alertDialog = AlertDialog.Builder(this@MainAct)
+                alertDialog.setTitle("[ 안내 ]")
+                alertDialog.setMessage("로그아웃을 하시겠습니까 ?")
+                alertDialog.setPositiveButton("확인") {dialog, id ->
+                    Toast.makeText(this@MainAct, getString(R.string.LOGOUT), Toast.LENGTH_SHORT).show()
+                    SharedManager.clear()
+                    val loginIntent = Intent(this@MainAct, LoginAct::class.java)
+                    startActivity(loginIntent)
+                    finish()
+                }
+                alertDialog.setNegativeButton("취소") {dialog, id ->
+                    dialog.dismiss()
+                }
+                alertDialog.show()
+
+            }
         }
 
         tts = TextToSpeech(this, this)
@@ -492,6 +513,8 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                                     BUS_FINISH_MODE -> setFinishYesButton()
                                 }
 
+                                setChangeSwipeColor("#ff0000")
+
 
                             } else {
                                 Log.e("SWIPE", "RIGHT TO LEFT")
@@ -501,6 +524,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                                     BUS_FINISH_MODE -> setFinishNoButton()
                                 }
 
+                                setChangeSwipeColor("#0000ff")
                             }
 
                         }
@@ -511,6 +535,17 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
             }
         }
         return true
+    }
+
+    private fun setChangeSwipeColor(colorVal : String) {
+        binding.apply {
+            layoutRoot.setBackgroundColor(Color.parseColor(colorVal))
+            Timer().schedule(object : TimerTask() {
+                override fun run() {
+                    layoutRoot.setBackgroundColor(Color.parseColor("#000000"))
+                }
+            }, 500)
+        }
     }
 
     /**
