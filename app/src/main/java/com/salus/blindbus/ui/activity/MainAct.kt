@@ -569,8 +569,6 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                     tvTtsMsg.text = resources.getString(R.string.BUS_NUMBER).format(
                             myCurrentBusList.last().getBusStopName()
                     )
-                    tts?.speak("${beaconService?.trackingModeUUID?.getBusStopName()}번 버스를 따라갑니다.",
-                            TextToSpeech.QUEUE_FLUSH, null, null)
                 }
             }
 
