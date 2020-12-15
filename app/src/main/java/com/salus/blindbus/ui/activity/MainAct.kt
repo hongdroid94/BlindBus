@@ -513,7 +513,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                                     BUS_FINISH_MODE -> setFinishYesButton()
                                 }
 
-                                setChangeSwipeColor("#ff0000")
+                                setChangeSwipeColor("#0000ff")
 
 
                             } else {
@@ -524,7 +524,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                                     BUS_FINISH_MODE -> setFinishNoButton()
                                 }
 
-                                setChangeSwipeColor("#0000ff")
+                                setChangeSwipeColor("#ff0000")
                             }
 
                         }
@@ -542,7 +542,9 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
             layoutRoot.setBackgroundColor(Color.parseColor(colorVal))
             Timer().schedule(object : TimerTask() {
                 override fun run() {
-                    layoutRoot.setBackgroundColor(Color.parseColor("#000000"))
+                    runOnUiThread {
+                        layoutRoot.setBackgroundColor(Color.parseColor("#000000"))
+                    }
                 }
             }, 500)
         }
