@@ -379,7 +379,11 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
     private fun Int.vibrationIntensity(repeat: Int) {
 
 
-//        if (내가 선택한 버스가 접근할시) {
+     // 내가 선택한 버스가 도착시 진동으로 알림을 준다.
+
+        /*
+            로너 비콘(i4)에 맞는 진동 셋팅
+        */
         when {
             this < -150 -> vibration(2000, 5, repeat, 200)
             this < -120 -> vibration(1500, 10, repeat, 120)
@@ -393,6 +397,22 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                 beaconService?.vib?.cancel()
             }
         }
+
+
+        /*
+            아타나시오 비콘(E2)에 맞는 진동 셋팅
+        */
+//        when {
+//            this < -3250 -> vibration(2000, 15, repeat, 20) // 가장 멀리있을때
+//            this < -1625 -> vibration(1250, 50, repeat, 15)
+//            this < -1300 -> vibration(700, 100, repeat, 10)
+//            this < -650 -> vibration(100, 200, repeat, 5)
+//            this < -130 -> vibration(50, 255, repeat, 1) // 가장 가까울 떄
+//            else -> {
+//                //버스에 탑승 완료를 하거나 버스가 떠났을시
+//                beaconService?.vib?.cancel()
+//            }
+//        }
 
     }
 
