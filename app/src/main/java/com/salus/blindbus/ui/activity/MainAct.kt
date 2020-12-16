@@ -554,7 +554,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                     if(rssiChangeCheck < rssiTemp){
                         // rssi값이 0보다 작을때 ex :: -60 ( rssi 값은 음수이다 )
                     }else{
-                        
+
                         tts?.speak("버스까지 ${currentDistance}미터 남았습니다.", TextToSpeech.QUEUE_FLUSH, null, null)
                         rssiTemp = rssiChangeCheck
                     }
