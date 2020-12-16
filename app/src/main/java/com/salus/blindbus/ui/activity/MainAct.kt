@@ -452,18 +452,34 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
     private fun Int.vibrationIntensity(repeat: Int) {
 
-
         // 내가 선택한 버스가 도착시 진동으로 알림을 준다.
-
         /*
-            로너 비콘(i4)에 맞는 진동 셋팅
+           로너 비콘(i4)에 맞는 진동 셋팅
         */
         when {
+            this < -100 ->  {    vibration(1500, 70, repeat)
+            if(beaconService!!.trueCheck == ttsTest_one)
+                distanceTTS("18")
 
-            this < -180 -> vibration(1500, 70, repeat, "20~12")
-            this < -140 -> vibration(750, 140, repeat, "12~8")
-            this < -90 -> vibration(300, 200, repeat, "9~5")
-            this < -75 -> vibration(50, 255, repeat, "5~1")
+            }
+            this < -90  ->  {    vibration(750, 140, repeat)
+                if(beaconService!!.trueCheck == ttsTest_two)
+                    distanceTTS("12")
+            }
+            this < -80  ->  {    vibration(300, 200, repeat)
+                if(beaconService!!.trueCheck == ttsTest_Three)
+                    distanceTTS("6")
+            }
+            this < -75 ->   {   vibration(50, 255, repeat)
+                if(beaconService!!.trueCheck == ttsTest_four)
+                    distanceTTS("3~1")
+            }
+
+
+
+
+
+
             else -> {
                 //버스에 탑승 완료를 하거나 버스가 떠났을시
                 beaconService?.vib?.cancel()
@@ -488,13 +504,14 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
     }
 
-    private fun vibration(timings: Long, amplitude: Int, repeat: Int, currentDistance: String) {
+    fun distanceTTS(ms:String) {
+        tts ?: return
+        if (!tts!!.isSpeaking)
+            tts?.speak("버스까지 약${ms}미터 남았습니다.", TextToSpeech.QUEUE_FLUSH, null, null)
+    }
+    private fun vibration(timings: Long, amplitude: Int, repeat: Int) {
 
-        fun distanceTTS() {
-            tts ?: return
-            if (!tts!!.isSpeaking)
-                tts?.speak("버스까지 ${currentDistance}미터 남았습니다.", TextToSpeech.QUEUE_FLUSH, null, null)
-        }
+
         //timings 진동의 진행 시간
         //amplitude 진동의 세기
         //repeat 진동의 반복 flag
@@ -506,13 +523,13 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                     repeat
                 )
             )
-            distanceTTS()
+
         } else {
             beaconService?.vib?.vibrate(
                 longArrayOf(timings, 1000, timings, 1000),
                 repeat
             )
-            distanceTTS()
+
         }
     }
 
@@ -716,9 +733,14 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
         const val REQUEST_ENABLE_BT = 1231
         const val BUS_CATCH_MODE = 8872
         const val BUS_FINISH_MODE = 9999
-
         const val STT_USE_MODE_FIRST_QUESTION = 0
         const val STT_USE_MODE_END_QUESTION = 1
+
+        const val ttsTest_four = 4
+        const val ttsTest_Three = 3
+        const val ttsTest_two = 2
+        const val ttsTest_one = 1
+
 
     }
 }
