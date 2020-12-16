@@ -7,8 +7,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.salus.blindbus.R
 import com.salus.blindbus.database.api.MainApi
-import com.salus.blindbus.databinding.ActivityLoginBinding
 import com.salus.blindbus.database.model.ResponseModel
+import com.salus.blindbus.databinding.ActivityLoginBinding
 import com.salus.blindbus.util.SharedManager
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -59,7 +59,7 @@ class LoginAct : AppCompatActivity() {
                         this@LoginAct,
                         getString(R.string.NOT_MATCHED_EMAIL_TYPE),
                         Toast.LENGTH_SHORT
-                    ).show()
+                   ).show()
                     return@setOnClickListener
                 }
 
@@ -106,11 +106,12 @@ class LoginAct : AppCompatActivity() {
                         })
                 )
             }
+
             btnGuestLogin.setOnClickListener {
                 startActivity(Intent(this@LoginAct, MainAct::class.java))
             }
-        }
 
+        }
     }
 
     /**
@@ -126,5 +127,4 @@ class LoginAct : AppCompatActivity() {
         }
         return returnValue
     }
-
 }

@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.*
 import com.minew.beacon.MinewBeacon
 import com.minew.beacon.MinewBeaconManager
-import com.salus.blindbus.database.model.UserRssi
 import com.salus.blindbus.ui.activity.MainAct
 import com.salus.blindbus.ui.activity.MainAct.Companion.BUS_CATCH_MODE
 import java.util.*

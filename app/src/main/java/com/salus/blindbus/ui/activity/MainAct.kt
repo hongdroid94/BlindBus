@@ -743,14 +743,14 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                 currentBusMode = BUS_CATCH_MODE
                 vib.cancel()
                 CoroutineScope(Dispatchers.IO).launch {
+
                     if (!tts!!.isSpeaking)
                         tts?.speak("탑승 완료 되었습니다", TextToSpeech.QUEUE_FLUSH,
                             null, null)
-                }
 
+                }
             }
         }
-
     }
 
     // 진동은 구간별로 잘 동작함.
