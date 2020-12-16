@@ -54,6 +54,7 @@ class BeaconService : Service() {
 
     var currentBusMode: Int? = BUS_CATCH_MODE
     lateinit var vib: Vibrator
+    var trueCheck:Int = -1
 
 
     override fun onBind(p0: Intent?) = localBinder
