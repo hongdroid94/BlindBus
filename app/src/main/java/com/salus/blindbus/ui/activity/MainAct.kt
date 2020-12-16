@@ -37,6 +37,7 @@ import java.util.*
 class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitListener {
 
 
+    private var appExit = 0
     // about binding object
     private lateinit var binding: ActivityMainBinding
 
@@ -798,6 +799,19 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
         const val STT_USE_MODE_FIRST_QUESTION = 0
         const val STT_USE_MODE_END_QUESTION = 1
 
+    }
+
+    override fun onBackPressed() {
+        CoroutineScope(Dispatchers.Main).launch {
+            if(appExit == 0){
+                appExit++
+                toastLongShow("종료하시려면 뒤로가기 버튼을 한번 더 눌러주세요")
+                delay(4000)
+                appExit = 0
+            }else{
+                super.onBackPressed()
+            }
+        }
     }
 
 
