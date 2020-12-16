@@ -453,7 +453,10 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
 
     private var rssiChangeCheck = 0
-    private var rssiSsibal = 0
+    private var rssiTemp = 0
+
+
+    // 거리별 진동 세기, 패턴 메서
     private fun Int.vibrationIntensity(repeat: Int) {
 
 
@@ -509,24 +512,24 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
         when {
 
-            this < -3250 -> {
-                vibration(1500, 70, repeat, "20~12")
+            this < -100 -> {
+                vibration(1500, 70, repeat, "5")
                 rssiChangeCheck = 1
                 Log.d("hjh", "$rssiChangeCheck")
 
             }
-            this < -1625 -> {
-                vibration(750, 140, repeat, "12~8")
+            this < -90 -> {
+                vibration(750, 140, repeat, "4")
                 rssiChangeCheck = 2
                 Log.d("hjh", "$rssiChangeCheck")
             }
-            this < -1300 -> {
-                vibration(300, 200, repeat, "9~5")
+            this < -80 -> {
+                vibration(300, 200, repeat, "3")
                 rssiChangeCheck = 3
                 Log.d("hjh", "$rssiChangeCheck")
             }
-            this < -650 -> {
-                vibration(50, 255, repeat, "5~1")
+            this < -70 -> {
+                vibration(50, 255, repeat, "2")
                 rssiChangeCheck = 4
                 Log.d("hjh", "$rssiChangeCheck")
             }
@@ -538,16 +541,24 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
     }
 
+    // 거리 피드백 관련
     private fun vibration(timings: Long, amplitude: Int, repeat: Int, currentDistance: String) {
 
+        // 거리별 음성 안내
         fun distanceTTS() {
-//            tts ?: return
-            if(!tts!!.isSpeaking){
-                Log.d("hjh", "인터스텔라 $rssiChangeCheck")
+            tts ?: return
+            if(!tts!!.isSpeaking){ // 중복 음성 안내 방지 ( tts가 나오지 않을 때 )
+                Log.d("hjh", "tts가 나오지 않을 때 -> rssi값 :: $rssiChangeCheck")
+                if(rssiChangeCheck != rssiTemp){
+                    // rssi값이 0이 아닐때
+                    if(rssiChangeCheck < rssiTemp){
+                        // rssi값이 0보다 작을때 ex :: -60 ( rssi 값은 음수이다 )
+                    }else{
+                        
+                        tts?.speak("버스까지 ${currentDistance}미터 남았습니다.", TextToSpeech.QUEUE_FLUSH, null, null)
+                        rssiTemp = rssiChangeCheck
+                    }
 
-                if(rssiChangeCheck != rssiSsibal){
-                    tts?.speak("버스까지 ${currentDistance}미터 남았습니다.", TextToSpeech.QUEUE_FLUSH, null, null)
-                    rssiSsibal = rssiChangeCheck
                 }
             }
 
@@ -726,6 +737,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                 finishCheckList.clear()
                 myCurrentBusList.clear()
                 busUUIDBeaconList.clear()
+                mMinewBeaconManager!!.stopScan()
                 currentBusMode = BUS_CATCH_MODE
                 CoroutineScope(Dispatchers.IO).launch{
                     if (!tts!!.isSpeaking)
@@ -736,6 +748,13 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
         }
 
     }
+
+    // 진동은 구간별로 잘 동작함.
+    // TTS는 진동에 매칭되지 않는다.
+    // 예 :: 최대 거리 최대 -> 진동 세기 최소
+    //                  -> TTS 4미터
+    // 구간별로 진동은 변화하지만 ( 가까워 질수록 강해 짐 ) TTS 음성은 진동 변화와 쌍을 이루지 못하고 따로 동작함.
+
 
 
     //TTS Listener
