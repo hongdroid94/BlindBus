@@ -227,6 +227,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                     override fun onRangeBeacons(minewBeacons: MutableList<MinewBeacon>?) {
                         Log.d("salusTest_1second_scan", "1초마다 스캔중 일때 호출")
 
+
                         if (!bluetoothAdapter!!.isEnabled && !systemBLEDialogCheck)
                             enableDisableBT()
 
@@ -450,6 +451,9 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
         }
     }
 
+
+    private var rssiChangeCheck = 0
+    private var rssiSsibal = 0
     private fun Int.vibrationIntensity(repeat: Int) {
 
 
@@ -458,25 +462,42 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
         /*
             로너 비콘(i4)에 맞는 진동 셋팅
         */
-        when {
-
-            this < -180 -> vibration(1500, 70, repeat, "20~12")
-            this < -140 -> vibration(750, 140, repeat, "12~8")
-            this < -90 -> vibration(300, 200, repeat, "9~5")
-            this < -75 -> vibration(50, 255, repeat, "5~1")
-            else -> {
-                //버스에 탑승 완료를 하거나 버스가 떠났을시
-                beaconService?.vib?.cancel()
-            }
-        }
+//        when {
+//
+//            this < -180 -> {
+//                vibration(1500, 70, repeat, "20~12")
+//                rssiChangeCheck = 1
+//                Log.d("hjh", "$rssiChangeCheck")
+//
+//            }
+//            this < -140 -> {
+//                vibration(750, 140, repeat, "12~8")
+//                rssiChangeCheck = 2
+//                Log.d("hjh", "$rssiChangeCheck")
+//            }
+//            this < -90 -> {
+//                vibration(300, 200, repeat, "9~5")
+//                rssiChangeCheck = 3
+//                Log.d("hjh", "$rssiChangeCheck")
+//            }
+//            this < -75 -> {
+//                vibration(50, 255, repeat, "5~1")
+//                rssiChangeCheck = 4
+//                Log.d("hjh", "$rssiChangeCheck")
+//            }
+//            else -> {
+//                //버스에 탑승 완료를 하거나 버스가 떠났을시
+//                beaconService?.vib?.cancel()
+//            }
+//        }
 
 
         /*
             아타나시오 비콘(E2)에 맞는 진동 셋팅
         */
 //        when {
-//            this < -3250 -> vibration(2000, 15, repeat, 20) // 가장 멀리있을때
-//            this < -1625 -> vibration(1250, 50, repeat, 15)
+//            this < -3250 -> vibration(2000, 15, repeat, "20") // 가장 멀리있을때
+//            this < -1625 -> vibration(1250, 50, repeat, "15")
 //            this < -1300 -> vibration(700, 100, repeat, 10)
 //            this < -650 -> vibration(100, 200, repeat, 5)
 //            this < -130 -> vibration(50, 255, repeat, 1) // 가장 가까울 떄
@@ -486,14 +507,50 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 //            }
 //        }
 
+        when {
+
+            this < -3250 -> {
+                vibration(1500, 70, repeat, "20~12")
+                rssiChangeCheck = 1
+                Log.d("hjh", "$rssiChangeCheck")
+
+            }
+            this < -1625 -> {
+                vibration(750, 140, repeat, "12~8")
+                rssiChangeCheck = 2
+                Log.d("hjh", "$rssiChangeCheck")
+            }
+            this < -1300 -> {
+                vibration(300, 200, repeat, "9~5")
+                rssiChangeCheck = 3
+                Log.d("hjh", "$rssiChangeCheck")
+            }
+            this < -650 -> {
+                vibration(50, 255, repeat, "5~1")
+                rssiChangeCheck = 4
+                Log.d("hjh", "$rssiChangeCheck")
+            }
+            else -> {
+                //버스에 탑승 완료를 하거나 버스가 떠났을시
+                beaconService?.vib?.cancel()
+            }
+        }
+
     }
 
     private fun vibration(timings: Long, amplitude: Int, repeat: Int, currentDistance: String) {
 
         fun distanceTTS() {
-            tts ?: return
-            if (!tts!!.isSpeaking)
-                tts?.speak("버스까지 ${currentDistance}미터 남았습니다.", TextToSpeech.QUEUE_FLUSH, null, null)
+//            tts ?: return
+            if(!tts!!.isSpeaking){
+                Log.d("hjh", "인터스텔라 $rssiChangeCheck")
+
+                if(rssiChangeCheck != rssiSsibal){
+                    tts?.speak("버스까지 ${currentDistance}미터 남았습니다.", TextToSpeech.QUEUE_FLUSH, null, null)
+                    rssiSsibal = rssiChangeCheck
+                }
+            }
+
         }
         //timings 진동의 진행 시간
         //amplitude 진동의 세기
