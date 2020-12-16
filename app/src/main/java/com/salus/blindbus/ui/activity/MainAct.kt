@@ -78,7 +78,8 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                 else -> "알수 없음"
             }
 
-            Toast.makeText(this@MainAct, message, Toast.LENGTH_SHORT).show()
+            Log.d("STT_ERROR", message)
+//            Toast.makeText(this@MainAct, message, Toast.LENGTH_SHORT).show()
         }
 
         override fun onResults(results: Bundle?) {
@@ -131,7 +132,6 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
         //TODO : 비콘이 스캐닝 콜백이 완성 되었을 때 Visible 처리 필요
         binding.apply {
-            tvTtsMsg.visibility = View.INVISIBLE
             btnLogout.setOnClickListener {
                 // 로그아웃
                 val alertDialog = AlertDialog.Builder(this@MainAct)
@@ -217,11 +217,11 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                     MinewBeaconManagerListener {
 
                     override fun onAppearBeacons(minewBeacons: MutableList<MinewBeacon>?) {
-                        toastLongShow("새로운 스캔을 했을때 호출")
+
                     }
 
                     override fun onDisappearBeacons(minewBeacons: MutableList<MinewBeacon>?) {
-                        toastLongShow("10초이상 스캔이 호출되지 않으면 이 메서드 호출")
+
                     }
 
                     override fun onRangeBeacons(minewBeacons: MutableList<MinewBeacon>?) {
@@ -240,11 +240,10 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                             trackingBeacon?.getBeaconRSSI()?.vibrationIntensity(REPEAT_OK)
 
                             trackingBeacon ?: return
-                            if (trackingBeacon.getBeaconRSSI() > -75) {
+                            if (trackingBeacon.getBeaconRSSI() > -75 && !tts!!.isSpeaking) {
                                 finishCheckList.add(true)
                             } else
                                 finishCheckList.clear()
-
                             if (finishCheckList.size > 4) {
                                 //도착 탑승 묻기
                                 finishCheckList.clear()
@@ -337,7 +336,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
                 myCurrentBusList.sortBy { it.getBeaconRSSI() }
 
-                tvTtsMsg.text = resources.getString(R.string.BUS_NUMBER).format(
+                tvMsg.text = resources.getString(R.string.BUS_NUMBER).format(
                     myCurrentBusList.last().getBusStopName()
                 )
 
@@ -354,7 +353,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                         if (it == "네") {
                             setYesAction()
                             tvResult.text = it
-                        }else{
+                        } else {
                             voiceUse = false
                         }
 
@@ -363,7 +362,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                         if (it == "아니요") {
                             setNoAction()
                             tvResult.text = it
-                        }else{
+                        } else {
                             voiceUse = false
                         }
                     }
@@ -385,7 +384,6 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
     private fun setBindConnection() {
         bindConnection = object : ServiceConnection {
             override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {
-                Log.d("asd", "왜안돼")
                 val binder = service as BeaconService.LocalBinder
                 beaconService = binder.getService()
             }
@@ -461,13 +459,11 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
             로너 비콘(i4)에 맞는 진동 셋팅
         */
         when {
-            this < -150 -> vibration(2000, 5, repeat, 200)
-            this < -120 -> vibration(1500, 10, repeat, 120)
-            this < -100 -> vibration(1250, 15, repeat, 70)
-            this < -100 -> vibration(1000, 20, repeat, 4)
-            this < -90 -> vibration(750, 80, repeat, 3)
-            this < -80 -> vibration(500, 150, repeat, 2)
-            this < -70 -> vibration(50, 255, repeat, 1)
+
+            this < -180 -> vibration(1500, 70, repeat, "20~12")
+            this < -140 -> vibration(750, 140, repeat, "12~8")
+            this < -90 -> vibration(300, 200, repeat, "9~5")
+            this < -75 -> vibration(50, 255, repeat, "5~1")
             else -> {
                 //버스에 탑승 완료를 하거나 버스가 떠났을시
                 beaconService?.vib?.cancel()
@@ -492,7 +488,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
     }
 
-    private fun vibration(timings: Long, amplitude: Int, repeat: Int, currentDistance: Int) {
+    private fun vibration(timings: Long, amplitude: Int, repeat: Int, currentDistance: String) {
 
         fun distanceTTS() {
             tts ?: return
@@ -606,12 +602,12 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
     }
 
     /**
-     * 사용자가 예 스와이프 액션을 취했을 시..
+     * 사용자가 아니오 스와이프 액션을 취했을 시..
      */
     private fun setNoAction() {
         binding.apply {
             beaconService?.apply {
-
+                tvMsg.text = "${myCurrentBusList.last().getBeaconUUID()}번\n버스추적 취소"
                 myCancelBusUUIDList.add(myCurrentBusList.last().getBeaconUUID())
                 myCurrentBusList.removeAt(myCurrentBusList.lastIndex)
                 tts?.speak(
@@ -619,11 +615,9 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                     null, null
                 )
                 if (myCurrentBusList.isNullOrEmpty()) {
-                    for (i in 0 until root.childCount) {
-                        root.getChildAt(i).visibility = View.GONE
-                    }
+                    tvMsg.text = "다가오는 버스 탐색중.."
                 } else {
-                    tvTtsMsg.text = resources.getString(R.string.BUS_NUMBER).format(
+                    tvMsg.text = resources.getString(R.string.BUS_NUMBER).format(
                         myCurrentBusList.last().getBusStopName()
                     )
                 }
@@ -638,24 +632,28 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
             tts ?: return
             if (!tts!!.isSpeaking)
                 tts?.speak("탑승체크가 재요청시 다시 확인해주세요.", TextToSpeech.QUEUE_FLUSH, null, null)
+            tvMsg.text = "탑승체크가 재요청시 다시 확인해주세요."
             beaconService?.finishCheckList?.clear()
         }
     }
 
     /**
-     * 사용자가 아니오 스와이프 액션을 취했을 시..
+     * 사용자가 예 스와이프 액션을 취했을 시..
      */
     private fun setYesAction() {
         binding.apply {
             beaconService?.apply {
                 trackingModeUUID = myCurrentBusList.last().getBeaconUUID()
 
-                for (i in 0 until root.childCount) {
-                    root.getChildAt(i).visibility = View.GONE
-                    myCurrentBusList.clear()
-                    myCancelBusUUIDList.clear()
-                }
+                myCurrentBusList.clear()
+                myCancelBusUUIDList.clear()
                 voiceUse = false
+                tts?.speak(
+                    "${trackingModeUUID!!.getBusStopName()}번 버스를 따라갑니다",
+                    TextToSpeech.QUEUE_FLUSH,
+                    null, null
+                )
+                tvMsg.text = "${trackingModeUUID!!.getBusStopName()}번\n버스추적"
             }
 
         }
@@ -665,12 +663,18 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
     private fun setFinishYesButton() {
         binding.apply {
             beaconService?.apply {
+
+                tvMsg.text = "${trackingModeUUID!!.getBusStopName()}번\n탑승완료"
                 trackingModeUUID = null
                 finishCheckList.clear()
+                myCurrentBusList.clear()
+                busUUIDBeaconList.clear()
                 currentBusMode = BUS_CATCH_MODE
-                tts ?: return
-                if (!tts!!.isSpeaking)
-                    tts?.speak("탑승 완료 하셨습니다", TextToSpeech.QUEUE_FLUSH, null, null)
+                CoroutineScope(Dispatchers.IO).launch{
+                    if (!tts!!.isSpeaking)
+                        tts?.speak("탑승 완료 되었습니다", TextToSpeech.QUEUE_FLUSH, null, null)
+                }
+
             }
         }
 

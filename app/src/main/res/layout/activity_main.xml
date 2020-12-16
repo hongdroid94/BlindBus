@@ -8,18 +8,19 @@
     android:background="#000">
 
     <TextView
-        android:id="@+id/tv_tts_msg"
+        android:id="@+id/tv_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/noto_black"
         android:includeFontPadding="false"
         android:textColor="#fff"
         android:textSize="30sp"
+        android:text="다가오는 버스 탐색중.."
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="TTS MESSAGE" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <TextView
@@ -31,7 +32,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_tts_msg" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_msg" />
 
     <Button
         android:id="@+id/btn_logout"
