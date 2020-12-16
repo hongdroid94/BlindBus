@@ -552,9 +552,9 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                 if(rssiChangeCheck != rssiTemp){
                     // rssi값이 0이 아닐때
                     if(rssiChangeCheck < rssiTemp){
-                        // rssi값이 0보다 작을때 ex :: -60 ( rssi 값은 음수이다 )
-                    }else{
 
+                    // rssi값이 0보다 작을때 ex :: -60 ( rssi 값은 음수이다 )
+                    }else{
                         tts?.speak("버스까지 ${currentDistance}미터 남았습니다.", TextToSpeech.QUEUE_FLUSH, null, null)
                         rssiTemp = rssiChangeCheck
                     }
@@ -600,6 +600,8 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
             tts?.stop()
             tts?.shutdown()
         }
+
+        unbindService(bindConnection)
     }
 
     // =================== Touch Area =================== //
@@ -784,8 +786,8 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
         } else {
             // 실패
         }
-    }
 
+    }
 
     companion object {
         const val FIRST_BUS_PROXIMITY_AREA = -470
@@ -797,4 +799,6 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
         const val STT_USE_MODE_END_QUESTION = 1
 
     }
+
+
 }
