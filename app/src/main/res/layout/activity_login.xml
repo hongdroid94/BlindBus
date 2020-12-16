@@ -49,6 +49,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/const_wave_wrapper">
 
+        <Button
+            android:id="@+id/btn_guestLogin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/shape_blue_gradient_all_round"
+            android:fontFamily="@font/noto_bold"
+            android:includeFontPadding="false"
+            android:text="@string/GUEST_LOGIN"
+            android:textColor="#fff"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/btn_login"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/chk_autoLogin"
+            app:layout_constraintWidth_percent="0.5" />
+
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
@@ -81,14 +98,14 @@
                 android:id="@+id/et_id"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="@string/INPUT_FIELD_EMAIL"
-                android:inputType="textEmailAddress"
                 android:fontFamily="@font/noto_regular"
+                android:hint="@string/INPUT_FIELD_EMAIL"
                 android:includeFontPadding="false"
+                android:inputType="textEmailAddress"
                 android:maxLength="30"
                 android:maxLines="1"
-                android:textColor="#000"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:textColor="#000" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -106,35 +123,23 @@
                 android:id="@+id/et_pwd"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:singleLine="true"
-                android:maxLines="1"
-                android:maxLength="20"
-                android:textColor="#000"
                 android:hint="@string/INPUT_FIELD_PASSWORD"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:maxLength="20"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="#000" />
         </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:id="@+id/tv_forgotPwd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/MSG_FORGOT_PASSWORD"
-            android:textColor="#448AFF"
-            android:fontFamily="@font/noto_regular"
-            android:includeFontPadding="false"
-            app:layout_constraintEnd_toEndOf="@+id/layout_pwd"
-            app:layout_constraintTop_toBottomOf="@+id/layout_pwd" />
 
         <TextView
             android:id="@+id/tv_register"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="@string/MSG_REGISTER"
-            android:textColor="#448AFF"
             android:fontFamily="@font/noto_medium"
             android:includeFontPadding="false"
+            android:text="@string/MSG_REGISTER"
+            android:textColor="#448AFF"
             app:layout_constraintEnd_toEndOf="@+id/btn_login"
             app:layout_constraintStart_toStartOf="@+id/btn_login"
             app:layout_constraintTop_toBottomOf="@+id/btn_login" />
@@ -144,15 +149,15 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/shape_blue_gradient_all_round"
+            android:fontFamily="@font/noto_bold"
+            android:includeFontPadding="false"
             android:text="@string/LOGIN"
             android:textColor="#fff"
             android:textSize="18sp"
-            android:fontFamily="@font/noto_bold"
-            android:includeFontPadding="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_forgotPwd"
+            app:layout_constraintTop_toBottomOf="@+id/layout_pwd"
             app:layout_constraintWidth_percent="0.5" />
 
         <CheckBox

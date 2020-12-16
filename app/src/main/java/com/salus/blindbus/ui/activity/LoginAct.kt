@@ -89,6 +89,9 @@ class LoginAct : AppCompatActivity() {
                         })
                 )
             }
+            btnGuestLogin.setOnClickListener{
+                startActivity(Intent(this@LoginAct,MainAct::class.java))
+            }
         }
 
     }

@@ -595,16 +595,6 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
         systemBLEDialogCheck = true
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (tts != null) {
-            tts?.stop()
-            tts?.shutdown()
-        }
-
-        unbindService(bindConnection)
-    }
-
     // =================== Touch Area =================== //
     override fun onTouch(view: View, event: MotionEvent): Boolean {
         var iTouchUpX = 0f
@@ -662,7 +652,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
     private fun setChangeSwipeColor(colorVal: String) {
         binding.apply {
             layoutRoot.setBackgroundColor(Color.parseColor(colorVal))
-            Timer().schedule(object : TimerTask() {
+            Timer().schedule(object : TimerTask(    ) {
                 override fun run() {
                     runOnUiThread {
                         layoutRoot.setBackgroundColor(Color.parseColor("#000000"))
@@ -809,10 +799,24 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                 delay(4000)
                 appExit = 0
             }else{
+                recognizer.stopListening()
+                beaconService!!.mMinewBeaconManager!!.stopScan()
+                unbindService(bindConnection)
+
                 super.onBackPressed()
+
             }
         }
     }
+    override fun onDestroy() {
+        super.onDestroy()
+        if (tts != null) {
+            tts?.stop()
+            tts?.shutdown()
+        }
 
+beaconService!!.mMinewBeaconManager!!.stopScan()
+
+    }
 
 }
