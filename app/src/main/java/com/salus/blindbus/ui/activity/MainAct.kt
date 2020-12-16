@@ -38,6 +38,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
 
     private var appExit = 0
+
     // about binding object
     private lateinit var binding: ActivityMainBinding
 
@@ -516,23 +517,23 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
             this < -100 -> {
                 vibration(1500, 70, repeat, "5")
                 rssiChangeCheck = 1
-                Log.d("hjh", "$rssiChangeCheck")
+                Log.d("RssiScoreCheck-100:", "$rssiChangeCheck")
 
             }
             this < -90 -> {
                 vibration(750, 140, repeat, "4")
                 rssiChangeCheck = 2
-                Log.d("hjh", "$rssiChangeCheck")
+                Log.d("RssiScoreCheck-90:", "$rssiChangeCheck")
             }
             this < -80 -> {
                 vibration(300, 200, repeat, "3")
                 rssiChangeCheck = 3
-                Log.d("hjh", "$rssiChangeCheck")
+                Log.d("RssiScoreCheck-80:", "$rssiChangeCheck")
             }
             this < -70 -> {
                 vibration(50, 255, repeat, "2")
                 rssiChangeCheck = 4
-                Log.d("hjh", "$rssiChangeCheck")
+                Log.d("RssiScoreCheck-70:", "$rssiChangeCheck")
             }
             else -> {
                 //버스에 탑승 완료를 하거나 버스가 떠났을시
@@ -548,15 +549,20 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
         // 거리별 음성 안내
         fun distanceTTS() {
             tts ?: return
-            if(!tts!!.isSpeaking){ // 중복 음성 안내 방지 ( tts가 나오지 않을 때 )
-                Log.d("hjh", "tts가 나오지 않을 때 -> rssi값 :: $rssiChangeCheck")
-                if(rssiChangeCheck != rssiTemp){
+            if (!tts!!.isSpeaking) { // 중복 음성 안내 방지 ( tts가 나오지 않을 때 )
+                Log.d("TTSuseCheck", "tts가 나오지 않을 때 -> rssi값 :: $rssiChangeCheck")
+                if (rssiChangeCheck != rssiTemp) {
                     // rssi값이 0이 아닐때
-                    if(rssiChangeCheck < rssiTemp){
+                    if (rssiChangeCheck < rssiTemp) {
 
-                    // rssi값이 0보다 작을때 ex :: -60 ( rssi 값은 음수이다 )
-                    }else{
-                        tts?.speak("버스까지 ${currentDistance}미터 남았습니다.", TextToSpeech.QUEUE_FLUSH, null, null)
+                        // rssi값이 0보다 작을때 ex :: -60 ( rssi 값은 음수이다 )
+                    } else {
+                        tts?.speak(
+                            "버스까지 ${currentDistance}미터 남았습니다.",
+                            TextToSpeech.QUEUE_FLUSH,
+                            null,
+                            null
+                        )
                         rssiTemp = rssiChangeCheck
                     }
 
@@ -652,7 +658,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
     private fun setChangeSwipeColor(colorVal: String) {
         binding.apply {
             layoutRoot.setBackgroundColor(Color.parseColor(colorVal))
-            Timer().schedule(object : TimerTask(    ) {
+            Timer().schedule(object : TimerTask() {
                 override fun run() {
                     runOnUiThread {
                         layoutRoot.setBackgroundColor(Color.parseColor("#000000"))
@@ -692,7 +698,10 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
         binding.apply {
             tts ?: return
             if (!tts!!.isSpeaking)
-                tts?.speak("탑승체크가 재요청시 다시 확인해주세요.", TextToSpeech.QUEUE_FLUSH, null, null)
+                tts?.speak(
+                    "탑승체크가 재요청시 다시 확인해주세요.", TextToSpeech.QUEUE_FLUSH,
+                    null, null
+                )
             tvMsg.text = "탑승체크가 재요청시 다시 확인해주세요."
             beaconService?.finishCheckList?.clear()
         }
@@ -732,9 +741,11 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
                 busUUIDBeaconList.clear()
                 mMinewBeaconManager!!.stopScan()
                 currentBusMode = BUS_CATCH_MODE
-                CoroutineScope(Dispatchers.IO).launch{
+                CoroutineScope(Dispatchers.IO).launch {
                     if (!tts!!.isSpeaking)
-                        tts?.speak("탑승 완료 되었습니다", TextToSpeech.QUEUE_FLUSH, null, null)
+                        tts?.speak("탑승 완료 되었습니다", TextToSpeech.QUEUE_FLUSH,
+                            null, null)
+
                 }
 
             }
@@ -747,7 +758,6 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
     // 예 :: 최대 거리 최대 -> 진동 세기 최소
     //                  -> TTS 4미터
     // 구간별로 진동은 변화하지만 ( 가까워 질수록 강해 짐 ) TTS 음성은 진동 변화와 쌍을 이루지 못하고 따로 동작함.
-
 
 
     //TTS Listener
@@ -793,12 +803,12 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
 
     override fun onBackPressed() {
         CoroutineScope(Dispatchers.Main).launch {
-            if(appExit == 0){
+            if (appExit == 0) {
                 appExit++
                 toastLongShow("종료하시려면 뒤로가기 버튼을 한번 더 눌러주세요")
                 delay(4000)
                 appExit = 0
-            }else{
+            } else {
                 recognizer.stopListening()
                 beaconService!!.mMinewBeaconManager!!.stopScan()
                 unbindService(bindConnection)
@@ -808,6 +818,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
             }
         }
     }
+
     override fun onDestroy() {
         super.onDestroy()
         if (tts != null) {
@@ -815,7 +826,7 @@ class MainAct : AppCompatActivity(), View.OnTouchListener, TextToSpeech.OnInitLi
             tts?.shutdown()
         }
 
-beaconService!!.mMinewBeaconManager!!.stopScan()
+        beaconService!!.mMinewBeaconManager!!.stopScan()
 
     }
 

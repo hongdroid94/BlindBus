@@ -42,7 +42,8 @@ class BeaconDataAdapter(
             it.tvMac.text =
                 "MAC:${beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_MAC).stringValue}"
             it.tvBattery.text =
-                "Battery:${beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_BatteryLevel).stringValue}"
+                "Battery:${beacon.getBeaconValue(BeaconValueIndex.MinewBeaconValueIndex_BatteryLevel)
+                    .stringValue}"
         }
     }
 

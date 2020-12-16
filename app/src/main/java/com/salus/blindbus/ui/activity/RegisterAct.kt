@@ -36,13 +36,15 @@ class RegisterAct : AppCompatActivity() {
                 val strId : String = etId.text.toString()
                 val strPwd : String = etPwd.text.toString()
                 if (strId.isEmpty() || strPwd.isEmpty()) {
-                    Toast.makeText(this@RegisterAct, "입력되지 않는 필드가 존재합니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@RegisterAct,
+                        "입력되지 않는 필드가 존재합니다.", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
                 // check email type pattern
                 if(!isCheckEmail(strId)) {
-                    Toast.makeText(this@RegisterAct, "이메일 형식에 맞지 않습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@RegisterAct,
+                        "이메일 형식에 맞지 않습니다.", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
 
@@ -58,16 +60,21 @@ class RegisterAct : AppCompatActivity() {
                     .subscribe({ response: ResponseModel ->
 
                         if(response.success) {
-                            Toast.makeText(this@RegisterAct, "회원가입이 정상적으로 처리 되었습니다\n로그인을 진행해주세요", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@RegisterAct,
+                                "회원가입이 정상적으로 처리 되었습니다\n로그인을 진행해주세요",
+                                Toast.LENGTH_SHORT).show()
                             finish()
                         }
                         else {
-                            Toast.makeText(this@RegisterAct, "회원가입 과정에서 문제가 발생되었습니다\n잠시 후 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@RegisterAct,
+                                "회원가입 과정에서 문제가 발생되었습니다\n잠시 후 다시 시도해주세요",
+                                Toast.LENGTH_SHORT).show()
                         }
 //                        Toast.makeText(this@RegisterAct, "Response ${response.success} ${response.userID} ${response.userPassword}", Toast.LENGTH_SHORT).show()
                     }, { error: Throwable ->
                         Log.d("RegisterAct", error.localizedMessage)
-                        Toast.makeText(this@RegisterAct, "Error ${error.localizedMessage}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@RegisterAct, "Error ${error.localizedMessage}",
+                            Toast.LENGTH_SHORT).show()
                     }))
             }
         }

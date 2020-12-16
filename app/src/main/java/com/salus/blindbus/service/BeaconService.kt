@@ -24,7 +24,6 @@ class BeaconService : Service() {
 
     private val localBinder = LocalBinder()
     var mMinewBeaconManager: MinewBeaconManager? = null
-    val comp = UserRssi()
 
     val myCurrentBusList = mutableListOf<MinewBeacon>()
     val myCancelBusUUIDList = mutableListOf<String>()
@@ -47,14 +46,16 @@ class BeaconService : Service() {
     //STT PlayING
     var STTplaying = false
 
-    // TODO: 버스도착정보 API를 연동해서 각 정류장에 들어오는 버스의 비콘 UUID를 자동으로 자료구조에 담도록 수정해야 함. ( 현재 하드코딩 상태 )
+    // TODO: 버스도착정보 API를 연동해서 각 정류장에 들어오는 버스의 비콘 UUID를 자동으로 자료구조에 담도록 수정해야 함.
+    //  ( 현재 하드코딩 상태 )
 //    var busUUIDBeaconList = mutableListOf("E2C56DB5-DFFB-48D2-B060-D0F5A71096E0") // 로너 비콘
-    var busUUIDBeaconList = mutableListOf("74278BDA-B644-4520-8F0C-720EAF059935") // 아타 비콘1 (Blind_1)
+    var busUUIDBeaconList =
+        mutableListOf("74278BDA-B644-4520-8F0C-720EAF059935") // 아타 비콘1 (Blind_1)
 //    var busUUIDBeaconList = mutableListOf("AB8190D5-D11E-4941-ACC4-42F30510B408") // 아타 비콘2 (Blind_2)
 
     var currentBusMode: Int? = BUS_CATCH_MODE
     lateinit var vib: Vibrator
-    var trueCheck:Int = -1
+    var trueCheck: Int = -1
 
 
     override fun onBind(p0: Intent?) = localBinder
@@ -88,7 +89,10 @@ class BeaconService : Service() {
 
         val channelId =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                createNotificationChannel(SERVICE_BEACON_CHANNEL_ID, "TheWalkerMusicStart")
+                createNotificationChannel(
+                    SERVICE_BEACON_CHANNEL_ID,
+                    "TheWalkerMusicStart"
+                )
             } else {
                 SERVICE_BEACON_CHANNEL_ID
             }

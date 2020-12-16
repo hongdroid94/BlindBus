@@ -42,20 +42,28 @@ class LoginAct : AppCompatActivity() {
             }
             // 로그인
             btnLogin.setOnClickListener {
-                val strId : String = etId.text.toString()
-                val strPw : String = etPwd.text.toString()
+                val strId: String = etId.text.toString()
+                val strPw: String = etPwd.text.toString()
                 // check empty input field
                 if (strId.isEmpty() || strPw.isEmpty()) {
-                    Toast.makeText(this@LoginAct, getString(R.string.EMPTY_INPUT_FIELD), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@LoginAct,
+                        getString(R.string.EMPTY_INPUT_FIELD),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@setOnClickListener
                 }
                 // check email type pattern
-                if(!isCheckEmail(strId)) {
-                    Toast.makeText(this@LoginAct, getString(R.string.NOT_MATCHED_EMAIL_TYPE), Toast.LENGTH_SHORT).show()
+                if (!isCheckEmail(strId)) {
+                    Toast.makeText(
+                        this@LoginAct,
+                        getString(R.string.NOT_MATCHED_EMAIL_TYPE),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@setOnClickListener
                 }
 
-                val loginMap : HashMap<String, String> = HashMap()
+                val loginMap: HashMap<String, String> = HashMap()
                 loginMap["userID"] = etId.text.toString()
                 loginMap["userPassword"] = etPwd.text.toString()
                 compositeDisposable = CompositeDisposable()
@@ -69,28 +77,37 @@ class LoginAct : AppCompatActivity() {
                                 // save local DB for user account info
 
                                 // set auto login
-                                if(chkAutoLogin.isChecked)
+                                if (chkAutoLogin.isChecked)
                                     SharedManager.write(SharedManager.AUTO_LOGIN, true)
 
                                 SharedManager.write(SharedManager.USER_NAME, response.userName)
 
-                                Toast.makeText(this@LoginAct, "환영합니다 ${response.userName} 님 !", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@LoginAct, "환영합니다 ${response.userName} 님 !",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 val loginIntent = Intent(this@LoginAct, MainAct::class.java)
                                 startActivity(loginIntent)
                                 finish()
                             } else {
-                                Toast.makeText(this@LoginAct, getString(R.string.INVALID_LOGIN_INFO), Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@LoginAct,
+                                    getString(R.string.INVALID_LOGIN_INFO),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-//                        Toast.makeText(this@RegisterAct, "Response ${response.success} ${response.userID} ${response.userPassword}", Toast.LENGTH_SHORT).show()
+
                         }, { error: Throwable ->
                             Log.d("RegisterAct", error.localizedMessage)
-                            Toast.makeText(this@LoginAct, "Error ${error.localizedMessage}", Toast.LENGTH_SHORT
+                            Toast.makeText(
+                                this@LoginAct, "Error ${error.localizedMessage}",
+                                Toast.LENGTH_SHORT
                             ).show()
                         })
                 )
             }
-            btnGuestLogin.setOnClickListener{
-                startActivity(Intent(this@LoginAct,MainAct::class.java))
+            btnGuestLogin.setOnClickListener {
+                startActivity(Intent(this@LoginAct, MainAct::class.java))
             }
         }
 
