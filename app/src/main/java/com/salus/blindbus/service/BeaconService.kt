@@ -9,8 +9,6 @@ import android.os.Build
 import android.os.Vibrator
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.*
 import com.minew.beacon.MinewBeacon
 import com.minew.beacon.MinewBeaconManager
